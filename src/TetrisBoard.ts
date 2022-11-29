@@ -38,9 +38,10 @@ export interface TetrisBoard {
     screen: Accessor<Array<Row>>;
     onKeyDown: (e: KeyboardEvent) => void;
     reset: () => void;
-    pause: () => void;
+    pause: (isPaused?: boolean) => void;
     start: () => void;
     gameState: Accessor<GameState>;
+    bindControlKey: (key: string) => void;
 }
 
 export interface GameState {
@@ -49,6 +50,7 @@ export interface GameState {
     score: number;
     gameInterval?: number;
     timeTillAdvance?: number;
+    bindKey?: string;
 }
 
 const createTetrisBoard = (): TetrisBoard => {
@@ -57,7 +59,7 @@ const createTetrisBoard = (): TetrisBoard => {
     const BOARD_HEIGHT = 20;
     const TILE_SPEED = 1000;    // drop 1 pixel every 1000ms
 
-    const keyBinding = Settings.getKeyBinding();
+    let keyBinding = Settings.getKeyBinding();
 
     const gameState = {
         gameInterval: 0,
@@ -82,7 +84,21 @@ const createTetrisBoard = (): TetrisBoard => {
     const [actualScreen, setActualScreen] = createSignal<TScreen>(createNewScreen());
     const [getGameState, setGameState] = createSignal<GameState>(gameState, {equals: false});
 
+    const bindControlKey = (key: string) => {
+        pause();
+        gameState.bindKey = key;
+        setGameState(gameState);
+    }
+
     const onKeyDown = (e: KeyboardEvent) => {
+        if(gameState.bindKey) {
+            Settings.setKeyBinding(gameState.bindKey, e.key);
+            Settings.saveKeyBindings();
+            keyBinding = Settings.getKeyBinding();
+            gameState.bindKey = undefined;
+            pause(false);
+            return;
+        }
         if(gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== 'p')) {
             return;
         }
@@ -249,8 +265,8 @@ const createTetrisBoard = (): TetrisBoard => {
         setGameState(gameState);
     };
 
-    const pause = () => {
-        gameState.isPaused = true;
+    const pause = (isPaused: boolean = true) => {
+        gameState.isPaused = isPaused;
         setGameState(gameState);
     };
 
@@ -275,7 +291,8 @@ const createTetrisBoard = (): TetrisBoard => {
         reset,
         pause,
         start,
-        gameState: getGameState
+        gameState: getGameState,
+        bindControlKey
     }
 }
 

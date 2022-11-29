@@ -1,14 +1,15 @@
 import { Component, createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
-// import appStyles from './App.module.scss';
+import Settings, { KeyBinding } from "./Settings";
 import createTetrisBoard, { Pixel, PixelType, Row } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
 
 const TetrisPage: Component = () => {
   const getHiScore = () => sessionStorage.getItem('hiScore') || '0';
 
-  const { width, screen, onKeyDown, pause, reset, gameState } = createTetrisBoard();
+  const { width, screen, onKeyDown, pause, reset, gameState, bindControlKey } = createTetrisBoard();
 
   const [hiScore, setHiScore] = createSignal<string>(getHiScore());
+  const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), {equals: false});
 
   const renderPixel = (pixel: Pixel) => (<div classList={{
     [styles.pixel]: true,
@@ -33,13 +34,25 @@ const TetrisPage: Component = () => {
     reset();
   }
 
+  const bindKey = (binding: string) => {
+    console.log(binding);
+    bindControlKey(binding);
+  }
+
+  createEffect(() => {
+    if(gameState()) {
+      console.log(Settings.getKeyBinding());
+      setKeyBinding(Settings.getKeyBinding());
+    }
+  });
+
   createEffect(() => {
     const hiscore = Number.parseInt(sessionStorage.getItem('hiScore') || '0');
     if (gameState().score > hiscore) {
       sessionStorage.setItem('hiScore', `${gameState().score}`);
       sessionStorage.setItem('hiScoreDate', `${new Date().getTime}`);
       setHiScore(getHiScore());
-    };
+    }
   });
 
   return (
@@ -53,10 +66,15 @@ const TetrisPage: Component = () => {
             [styles.gameOver]: true, 
             [styles['animate-in']]: true}}><span>Game Over</span></div>
         </Show>
-        <Show when={gameState().isPaused}>
+        <Show when={gameState().isPaused && !gameState().bindKey}>
           <div classList={{
-            [styles.paused]: true, 
+            [styles.paused]: true,
             [styles['animate-in']]: true}}><span>Paused</span></div>
+        </Show>
+        <Show when={gameState().bindKey}>
+          <div classList={{
+            [styles.paused]: true,
+            [styles['animate-in']]: true}}><span>Press key for '{gameState().bindKey}'</span></div>
         </Show>
 
         <div class={styles.info}>
@@ -74,15 +92,12 @@ const TetrisPage: Component = () => {
         </div>
 
         <div class={styles.help}>
-          <p>
-            Movement: arrow keys - left/right/down
-          </p>
-          <p>
-            Rotate: arrow up
-          </p>
-          <p>
-            Pause: p
-          </p>
+            <p>Controls:<br/><small>(click selected row to reassign)</small></p>
+            <div class={styles.controlKey} onclick={() => bindKey('left')}>Left: {keyBinding().left}</div>
+            <div class={styles.controlKey} onclick={() => bindKey('right')}>Right: {keyBinding().right}</div>
+            <div class={styles.controlKey} onclick={() => bindKey('down')}>Down: {keyBinding().down}</div>
+            <div class={styles.controlKey} onclick={() => bindKey('rotate')}>Rotate: {keyBinding().rotate}</div>
+            <div class={styles.controlKey} onclick={() => bindKey('pause')}>Pause: {keyBinding().pause}</div>
         </div>
       </div>
       <footer class={styles.footer}>

@@ -22,6 +22,10 @@ class Settings {
         drop: 'Space',
     }
 
+    public setKeyBinding(control: string, key: string): void {
+        this.keyBinding[control] = key;
+    }
+
     public getKeyBinding(): KeyBinding {
         this.loadKeyBindings();
         return this.keyBinding;
@@ -29,13 +33,13 @@ class Settings {
 
     private loadKeyBindings(): void {
         Object.getOwnPropertyNames(this.keyBinding).forEach((key: string) => {
-            this.keyBinding[key] = sessionStorage.getItem(`${this.keyBindingPrefix}{key}`) || this.keyBinding[key];
+            this.keyBinding[key] = sessionStorage.getItem(`${this.keyBindingPrefix}${key}`) || this.keyBinding[key];
         });
     }
 
     public saveKeyBindings(): void {
         Object.getOwnPropertyNames(this.keyBinding).forEach((key: string) => {
-            sessionStorage.setItem(`${this.keyBindingPrefix}{key}`, this.keyBinding[key]);
+            sessionStorage.setItem(`${this.keyBindingPrefix}${key}`, this.keyBinding[key]);
         });
     }
 
