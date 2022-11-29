@@ -97,7 +97,7 @@ const createTetrisBoard = (): TetrisBoard => {
             pause(false);
             return;
         }
-        if(gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== 'p')) {
+        if(gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== keyBinding.pause.toLowerCase())) {
             return;
         }
         if(TilesUtils.hasFullLines(screen)) {
