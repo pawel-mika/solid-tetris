@@ -50,7 +50,7 @@ const TetrisPage: Component = () => {
     const hiscore = Number.parseInt(sessionStorage.getItem('hiScore') || '0');
     if (gameState().score > hiscore) {
       sessionStorage.setItem('hiScore', `${gameState().score}`);
-      sessionStorage.setItem('hiScoreDate', `${new Date().getTime}`);
+      sessionStorage.setItem('hiScoreDate', `${new Date().getTime()}`);
       setHiScore(getHiScore());
     }
   });
