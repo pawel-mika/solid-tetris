@@ -3,6 +3,9 @@ import Settings, { KeyBinding } from "./Settings";
 import createTetrisBoard, { Pixel, PixelType, Row } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
 
+declare const __COMMIT_HASH__: string;
+declare const __BUILD_DATE__: string;
+
 const TetrisPage: Component = () => {
   const getHiScore = () => sessionStorage.getItem('hiScore') || '0';
 
@@ -101,6 +104,7 @@ const TetrisPage: Component = () => {
         </div>
       </div>
       <footer class={styles.footer}>
+        build: {__COMMIT_HASH__}, on: {__BUILD_DATE__}
       </footer>
     </div>
   );
