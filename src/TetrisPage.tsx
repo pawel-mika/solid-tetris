@@ -104,7 +104,7 @@ const TetrisPage: Component = () => {
         </div>
       </div>
       <footer class={styles.footer}>
-        build: {__COMMIT_HASH__}, on: {__BUILD_DATE__}
+        build: {__COMMIT_HASH__} on: {__BUILD_DATE__}
       </footer>
     </div>
   );

@@ -54,9 +54,9 @@ export interface GameState {
 }
 
 const createTetrisBoard = (): TetrisBoard => {
-    const GAME_TICK = 1000;
-    const BOARD_WIDTH = 10;
-    const BOARD_HEIGHT = 20;
+    const GAME_TICK = Settings.getDifficulties()[0].gameTick;
+    const BOARD_WIDTH = Settings.getBoardConfigs()[0].width;
+    const BOARD_HEIGHT = Settings.getBoardConfigs()[0].height;
 
     let keyBinding = Settings.getKeyBinding();
 
@@ -149,6 +149,7 @@ const createTetrisBoard = (): TetrisBoard => {
         deltaTile = { ...tile };
         deltaTile.top += 1;
         if (detectCollision(deltaTile, screen)) {
+            addScore(TilesUtils.getNonEmptyPixelsLenght(tile));
             screen = mixinTileToScreen(tile, screen);
             tile = createTile();
         }
@@ -209,8 +210,7 @@ const createTetrisBoard = (): TetrisBoard => {
         });
         const diff = screen.length - clearedScreen.length;
         if (diff > 0) {
-            gameState.score += 100 * diff * diff * 0.5;
-            setGameState(gameState);
+            addScore(100 * diff * diff * (Settings.getDifficulties()[0].gameTick / 1000 / 2));
             return [...Array<Row>(diff).fill(createRow()), ...clearedScreen];
         }
         return screen;
@@ -266,13 +266,18 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const start = () => {
         gameState.isGameOver = false;
-        gameState.gameInterval = setInterval(mainLoop, GAME_TICK);
+        gameState.gameInterval = window.setInterval(mainLoop, GAME_TICK);
         gameState.isPaused = false;
         setGameState(gameState);
     };
 
     const getActualScreen = (): Array<Row> => {
         return mixinTileToScreen(tile, screen);
+    }
+
+    const addScore = (value: number): void => {
+        gameState.score += value;
+        setGameState(gameState);
     }
 
     reset();

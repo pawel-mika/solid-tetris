@@ -52,6 +52,10 @@ class TilesUtils {
         }) != undefined;
     }
 
+    public getNonEmptyPixelsLenght = (tile: Tile): number => {
+        return tile.block.reduce((acc, rows) => acc + rows.filter((pixel) => pixel.type !== PixelType.EMPTY).length, 0);
+    }
+
     private static createNewInstance(): TilesUtils {
         this.instance = new TilesUtils();
         return this.instance;

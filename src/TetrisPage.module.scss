@@ -24,7 +24,7 @@
     display: grid;
     align-content: center;
     justify-content: flex-start;
-    font-size: 1.5em;
+    font-size: 1em;
     color: white;
     padding: 1vw;
     height: 1vh;
@@ -122,7 +122,7 @@
 
     &.p2 {
         background-color: rgb(131, 18, 74);
-        animation: pixels-out both 1s ease-out;
+        animation: pixels-out forwards 0.5s cubic-bezier(0,.75,.5,1);
     }
 
     &.animate-down {
@@ -146,14 +146,14 @@
     0% {
         transform: scale(1) rotatex(0);
         transform-origin: bottom;
-        filter: opacity(1);
+        filter: opacity(1) blur(0);
     }
 
     100% {
         transform-origin: bottom;
         // transform: scale(0) rotateX(0deg);
-        transform: translateX(50vw);
-        filter: opacity(0);
+        transform: translateX(25vw);
+        filter: opacity(0) blur(0.25vh);
     }
 
 }
