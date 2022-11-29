@@ -45,6 +45,14 @@
     // animation: gradient 30s ease infinite;
 }
 
+.nextTile {
+    display: grid;
+    grid-gap: 0vw;
+    grid-auto-rows: 1fr;
+    margin: auto;
+    width: fit-content;
+}
+
 .tetris {
     display: grid;
     grid-gap: 0vw;
@@ -92,6 +100,7 @@
     font-size: 3vh;
 
     button {
+        margin-top: 1em;
         font-size: 3vh;
     }
 }
@@ -129,8 +138,6 @@
         animation: pixels-move forwards 1s linear;
     }
 }
-
-
 
 @keyframes pixels-move {
     0% {

@@ -33,6 +33,7 @@ export interface Row {
 }
 
 export interface TetrisBoard {
+    nextTile: Accessor<Tile>;
     width: number;
     height: number;
     screen: Accessor<Array<Row>>;
@@ -79,6 +80,7 @@ const createTetrisBoard = (): TetrisBoard => {
 
     let screen: TScreen;
 
+    const [nextTile, setNextTile] = createSignal<Tile>(createTile());
     const [actualScreen, setActualScreen] = createSignal<TScreen>(createNewScreen());
     const [getGameState, setGameState] = createSignal<GameState>(gameState, {equals: false});
 
@@ -151,7 +153,8 @@ const createTetrisBoard = (): TetrisBoard => {
         if (detectCollision(deltaTile, screen)) {
             addScore(TilesUtils.getNonEmptyPixelsLenght(tile));
             screen = mixinTileToScreen(tile, screen);
-            tile = createTile();
+            tile = nextTile();
+            setNextTile(createTile());
         }
 
         screen = markFullLines(screen);
@@ -188,7 +191,6 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const doGameOver = () => {
         gameState.isGameOver = true;
-        // pause();
         setGameState(gameState);
     }
 
@@ -283,6 +285,7 @@ const createTetrisBoard = (): TetrisBoard => {
     reset();
 
     return {
+        nextTile,
         width: BOARD_WIDTH,
         height: BOARD_HEIGHT,
         screen: actualScreen,
