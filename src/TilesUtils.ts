@@ -41,6 +41,17 @@ class TilesUtils {
         return screenA.find((row: Row, rIndex: number) => row.pixels.find((pixel: Pixel, pIndex: number) => pixel.type !== screenB[rIndex].pixels[pIndex].type)) === undefined;
     }
 
+    
+    public hasFullLines = (screen: TScreen): boolean => {
+        return screen.find((row, index) => {
+            const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
+            if (taken === row.pixels.length) {
+                return row;
+            }
+            return null;
+        }) != undefined;
+    }
+
     private static createNewInstance(): TilesUtils {
         this.instance = new TilesUtils();
         return this.instance;

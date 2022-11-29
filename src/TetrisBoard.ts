@@ -54,10 +54,9 @@ export interface GameState {
 }
 
 const createTetrisBoard = (): TetrisBoard => {
-    const GAME_TICK = 1000; // / 25;
+    const GAME_TICK = 1000;
     const BOARD_WIDTH = 10;
     const BOARD_HEIGHT = 20;
-    const TILE_SPEED = 1000;    // drop 1 pixel every 1000ms
 
     let keyBinding = Settings.getKeyBinding();
 
@@ -66,7 +65,6 @@ const createTetrisBoard = (): TetrisBoard => {
         isPaused: false,
         isGameOver: false,
         score: 0,
-        timeTillAdvance: TILE_SPEED
     } as GameState;
 
     const createTile = () => TilesUtils.randomColorTile(
@@ -100,6 +98,9 @@ const createTetrisBoard = (): TetrisBoard => {
             return;
         }
         if(gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== 'p')) {
+            return;
+        }
+        if(TilesUtils.hasFullLines(screen)) {
             return;
         }
         switch (e.key.toLowerCase()) {
@@ -142,13 +143,6 @@ const createTetrisBoard = (): TetrisBoard => {
 
         screen = clearFullLines(screen);
 
-        // calc full tick
-        // gameState.timeTillAdvance -= GAME_TICK;
-        // if (gameState.timeTillAdvance <= 0) {
-        //     screen = clearFullLines(screen);
-        //     tile.possibleTop = tile.top + 1;
-        //     gameState.timeTillAdvance = TILE_SPEED;
-        // }
         tile.possibleTop = tile.top + 1;
 
         // detect down movement collision
