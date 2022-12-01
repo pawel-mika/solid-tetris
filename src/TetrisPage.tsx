@@ -30,7 +30,7 @@ const TetrisPage: Component = () => {
     [styles.p1]: pixel.type === PixelType.TAKEN,
     [styles.p2]: pixel.type === PixelType.REMOVING
   }}
-    style={pixel.type === PixelType.TAKEN ? pixel.style : {}}>{pixel?.type}
+    style={pixel.type !== PixelType.EMPTY ? pixel.style : {}}>
   </div>)
 
   const renderRow = (row: Row) => row.pixels.map((pixel) => renderPixel(pixel));

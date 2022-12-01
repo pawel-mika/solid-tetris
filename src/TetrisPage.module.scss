@@ -123,15 +123,15 @@
 
 .controlKey {
     cursor: pointer;
-    border-bottom: 1px solid rgb(36, 91, 109);
+    border-bottom: 1px solid rgb(26, 68, 82);
 }
 
 .pixel {
     display: grid;
-    border-top: 1px solid lightgray;
-    border-left: 1px solid darkgray;
-    border-right: 1px solid gray;
-    border-bottom: 1px solid #444444;
+    // border-top: 1px solid lightgray;
+    // border-left: 1px solid darkgray;
+    // border-right: 1px solid gray;
+    // border-bottom: 1px solid #444444;
     min-width: 3vh;
     min-height: 3vh;
     font-size: 1vh;
