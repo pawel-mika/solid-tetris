@@ -1,8 +1,8 @@
-import { Accessor, createSignal } from "solid-js";
-import { JSX } from "solid-js/jsx-runtime";
-import BlockFactory from "./BlockFactory";
-import Settings from "./Settings";
-import TilesUtils from "./TilesUtils";
+import { Accessor, createEffect, createSignal, Setter } from 'solid-js';
+import { JSX } from 'solid-js/jsx-runtime';
+import BlockFactory from './BlockFactory';
+import Settings, { BoardConfig } from './Settings';
+import TilesUtils from './TilesUtils';
 
 export enum PixelType {
     EMPTY,
@@ -34,8 +34,6 @@ export interface Row {
 
 export interface TetrisBoard {
     nextTile: Accessor<Tile>;
-    width: number;
-    height: number;
     screen: Accessor<Array<Row>>;
     onKeyDown: (e: KeyboardEvent) => void;
     reset: () => void;
@@ -43,6 +41,8 @@ export interface TetrisBoard {
     start: () => void;
     gameState: Accessor<GameState>;
     bindControlKey: (key: string) => void;
+    setBoardConfig: Setter<BoardConfig>;
+    boardConfig: Accessor<BoardConfig>;
 }
 
 export interface GameState {
@@ -54,10 +54,23 @@ export interface GameState {
     bindKey?: string;
 }
 
+/**
+ * 
+ * @returns base tetris board implementation
+ */
 const createTetrisBoard = (): TetrisBoard => {
+    const [boardConfig, setBoardConfig] = createSignal<BoardConfig>(Settings.loadBoardConfig());
+
     const GAME_TICK = Settings.getDifficulties()[0].gameTick;
-    const BOARD_WIDTH = Settings.getBoardConfigs()[0].width;
-    const BOARD_HEIGHT = Settings.getBoardConfigs()[0].height;
+    let BOARD_WIDTH = boardConfig().width;
+    let BOARD_HEIGHT = boardConfig().height;
+
+    createEffect(() => {
+        BOARD_WIDTH = boardConfig().width;
+        BOARD_HEIGHT = boardConfig().height;
+        console.log(`updated board size: `, boardConfig());
+        reset();
+    });
 
     let keyBinding = Settings.getKeyBinding();
 
@@ -82,7 +95,7 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const [nextTile, setNextTile] = createSignal<Tile>(createTile());
     const [actualScreen, setActualScreen] = createSignal<TScreen>(createNewScreen());
-    const [getGameState, setGameState] = createSignal<GameState>(gameState, {equals: false});
+    const [getGameState, setGameState] = createSignal<GameState>(gameState, { equals: false });
 
     const bindControlKey = (key: string) => {
         pause();
@@ -91,7 +104,7 @@ const createTetrisBoard = (): TetrisBoard => {
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
-        if(gameState.bindKey) {
+        if (gameState.bindKey) {
             Settings.setKeyBinding(gameState.bindKey, e.key);
             Settings.saveKeyBindings();
             keyBinding = Settings.getKeyBinding();
@@ -99,10 +112,10 @@ const createTetrisBoard = (): TetrisBoard => {
             pause(false);
             return;
         }
-        if(gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== keyBinding.pause.toLowerCase())) {
+        if (gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== keyBinding.pause.toLowerCase())) {
             return;
         }
-        if(TilesUtils.hasFullLines(screen)) {
+        if (TilesUtils.hasFullLines(screen)) {
             return;
         }
         switch (e.key.toLowerCase()) {
@@ -179,14 +192,14 @@ const createTetrisBoard = (): TetrisBoard => {
     }
 
     const rotateIfPossible = (tile: Tile): Tile => {
-        const nTile = {...tile};
+        const nTile = { ...tile };
         nTile.block = BlockFactory.rotateBlockCW(nTile.block) as TBlock;
         nTile.width = BlockFactory.getBlockWidth(nTile.block);
         nTile.height = nTile.block.length;
         nTile.left = nTile.left + nTile.width > BOARD_WIDTH
             ? BOARD_WIDTH - nTile.width : nTile.left;
         const collision = detectCollision(nTile, screen);
-        return collision ? tile: nTile;
+        return collision ? tile : nTile;
     }
 
     const doGameOver = () => {
@@ -256,6 +269,7 @@ const createTetrisBoard = (): TetrisBoard => {
         gameState.score = 0;
         screen = createNewScreen();
         tile = createTile();
+        setNextTile(createTile());
         setActualScreen(getActualScreen());
         start();
         setGameState(gameState);
@@ -286,15 +300,15 @@ const createTetrisBoard = (): TetrisBoard => {
 
     return {
         nextTile,
-        width: BOARD_WIDTH,
-        height: BOARD_HEIGHT,
         screen: actualScreen,
         onKeyDown,
         reset,
         pause,
         start,
         gameState: getGameState,
-        bindControlKey
+        bindControlKey,
+        setBoardConfig,
+        boardConfig
     }
 }
 
