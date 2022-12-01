@@ -68,7 +68,6 @@ const createTetrisBoard = (): TetrisBoard => {
     createEffect(() => {
         BOARD_WIDTH = boardConfig().width;
         BOARD_HEIGHT = boardConfig().height;
-        console.log(`updated board size: `, boardConfig());
         reset();
     });
 
@@ -211,7 +210,6 @@ const createTetrisBoard = (): TetrisBoard => {
         return screen.map((row, index) => {
             const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
             if (taken === BOARD_WIDTH) {
-                // const nrow = createRow(BOARD_WIDTH, PixelType.REMOVING);
                 row.pixels.forEach((pixel) => pixel.type = PixelType.REMOVING);
                 return row;
             }

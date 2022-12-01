@@ -128,10 +128,6 @@
 
 .pixel {
     display: grid;
-    // border-top: 1px solid lightgray;
-    // border-left: 1px solid darkgray;
-    // border-right: 1px solid gray;
-    // border-bottom: 1px solid #444444;
     min-width: 3vh;
     min-height: 3vh;
     font-size: 1vh;
@@ -142,43 +138,54 @@
     }
 
     &.p1 {
-        background-color: blueviolet;
+        background-color: transparent;
+        // background: linear-gradient(45deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 40%, rgba(255,255,255,1) 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0) 100%);
+        // background-size: 200% 200%;
+        // animation: gradient 1s ease-in-out infinite;
     }
 
     &.p2 {
         background-color: rgb(131, 18, 74);
-        animation: pixels-out forwards 0.75s cubic-bezier(0,.75,.5,1);
+        animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
     }
 
-    &.animate-down {
-        animation: pixels-move forwards 1s linear;
-    }
+    // &.animate-down {
+    //     animation: pixels-move forwards 1s linear;
+    // }
 }
 
-@keyframes pixels-move {
-    0% {
-        transform: translateY(0);
-    }
+// @keyframes pixels-move {
+//     0% {
+//         transform: translateY(0);
+//     }
 
-    100% {
-        transform: translateY(3vh);
-    }
-}
+//     100% {
+//         transform: translateY(3vh);
+//     }
+// }
 
-@keyframes pixels-out {
+@keyframes pixels-out-1 {
     0% {
         transform: scale(1) rotatex(0);
-        transform-origin: bottom;
         filter: opacity(1) blur(0);
     }
 
     100% {
-        transform-origin: bottom;
-        // transform: scale(0) rotateX(0deg);
-        transform: translateX(25vw);
-        filter: opacity(0) blur(0.25vh);
+        transform: scale(4) translateX(2vw);
+        filter: opacity(0) blur(2vh);
+    }
+}
+
+@keyframes pixels-out-2 {
+    0% {
+        transform: scale(1) rotatex(0);
+        filter: opacity(1) blur(0);
     }
 
+    100% {
+        transform: scale(4) translateX(-2vw);
+        filter: opacity(0) blur(2vh);
+    }
 }
 
 @keyframes gradient {
