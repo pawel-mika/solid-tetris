@@ -25,13 +25,24 @@ const TetrisPage: Component = () => {
   const [hiScore, setHiScore] = createSignal<string>(getHiScore());
   const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), { equals: false });
 
-  const renderPixel = (pixel: Pixel) => (<div classList={{
-    [styles.pixel]: true,
-    [styles.p1]: pixel.type === PixelType.TAKEN,
-    [styles.p2]: pixel.type === PixelType.REMOVING
-  }}
-    style={pixel.type !== PixelType.EMPTY ? pixel.style : {}}>
-  </div>)
+  const renderPixel = (pixel: Pixel) => {
+    if(pixel.type === PixelType.REMOVING) {
+      pixel = setRandomRemovingAnimation(pixel);
+    }
+    return (<div classList={{
+      [styles.pixel]: true,
+      [styles.p1]: pixel.type === PixelType.TAKEN,
+      [styles.p2]: pixel.type === PixelType.REMOVING
+    }}
+    style={ pixel.type !== PixelType.EMPTY ? pixel.style : {} }>
+  </div>)}
+
+  const setRandomRemovingAnimation = (pixel: Pixel) => {
+    const anims = [styles['pixels-out-1'], styles['pixels-out-2']];
+    const anim = anims[Math.floor(Math.random() * anims.length)];
+    pixel.style = { ...pixel.style, 'animation-name': anim };
+    return pixel;
+  }
 
   const renderRow = (row: Row) => row.pixels.map((pixel) => renderPixel(pixel));
 
