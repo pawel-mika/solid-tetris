@@ -23,15 +23,15 @@ class Settings {
   private static instance: Settings;
 
   private boardConfigs: Array<BoardConfig> = new Array<BoardConfig>({
-    name: "Regular",
+    name: 'Regular',
     width: 10,
     height: 20,
   }, {
-    name: "Medium",
+    name: 'Medium',
     width: 12,
     height: 24,
   }, {
-    name: "Large",
+    name: 'Large',
     width: 14,
     height: 28,
   });
@@ -47,15 +47,15 @@ class Settings {
     gameTick: 500,
   });
 
-  private keyBindingPrefix = "settings.kb.";
+  private keyBindingPrefix = 'settings.kb.';
   private keyBinding: KeyBinding = {
-    rotate: "ArrowUp",
-    right: "ArrowRight",
-    left: "ArrowLeft",
-    down: "ArrowDown",
-    pause: "p",
-    newGame: "n",
-    drop: "Space",
+    rotate: 'ArrowUp',
+    right: 'ArrowRight',
+    left: 'ArrowLeft',
+    down: 'ArrowDown',
+    pause: 'p',
+    newGame: 'n',
+    drop: 'Space',
   };
 
   public setKeyBinding(control: string, key: string): void {
@@ -71,8 +71,20 @@ class Settings {
     return this.boardConfigs;
   }
 
+  public getBoardConfigByName(name: string): BoardConfig {
+    return this.boardConfigs.find((bc) => bc.name === name) || this.boardConfigs[0];
+  }
+
   public getDifficulties(): Array<Difficulty> {
     return this.difficulties;
+  }
+
+  public loadBoardConfig(): BoardConfig {
+    return JSON.parse(sessionStorage.getItem('settings.boardConfig') || 'null') || this.boardConfigs[0] ;
+  }
+
+  public saveBoardConfig(boardConfig: BoardConfig): void {
+    sessionStorage.setItem('settings.boardConfig', JSON.stringify(boardConfig));
   }
 
   private loadKeyBindings(): void {

@@ -1,15 +1,26 @@
-import { Component, createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
+import { Component, createEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Settings, { KeyBinding } from "./Settings";
 import createTetrisBoard, { Pixel, PixelType, Row } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
 
+declare const __APP_VERSION__: string;
 declare const __COMMIT_HASH__: string;
 declare const __BUILD_DATE__: string;
 
 const TetrisPage: Component = () => {
   const getHiScore = () => sessionStorage.getItem('hiScore') || '0';
 
-  const { width, screen, onKeyDown, pause, reset, gameState, bindControlKey, nextTile } = createTetrisBoard();
+  const {
+    screen,
+    onKeyDown,
+    pause,
+    reset,
+    gameState,
+    bindControlKey,
+    nextTile,
+    boardConfig,
+    setBoardConfig
+  } = createTetrisBoard();
 
   const [hiScore, setHiScore] = createSignal<string>(getHiScore());
   const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), { equals: false });
@@ -38,13 +49,19 @@ const TetrisPage: Component = () => {
   }
 
   const bindKey = (binding: string) => {
-    console.log(binding);
     bindControlKey(binding);
+  }
+
+  const changeBoardSize = (e: InputEvent & { currentTarget: HTMLSelectElement; target: Element; }) => {
+    const configName = e.currentTarget.value;
+    const config = Settings.getBoardConfigByName(configName);
+    setBoardConfig(config);
+    Settings.saveBoardConfig(config);
+    e.currentTarget.blur();
   }
 
   createEffect(() => {
     if (gameState()) {
-      console.log(Settings.getKeyBinding());
       setKeyBinding(Settings.getKeyBinding());
     }
   });
@@ -61,8 +78,15 @@ const TetrisPage: Component = () => {
   return (
     <div class={styles.App}>
       <header class={styles.header}>
-        WorkInProgress | level (speed): 0
+        Board size:
+        <select value={boardConfig().name} onInput={e => changeBoardSize(e)}>
+          <For each={Settings.getBoardConfigs()}>{
+            config => <option value={config.name}>{config.name}</option>
+          }</For>
+        </select>
+        <span class={styles.smallText}>Warning!<br />will reset the board!</span>
       </header>
+
       <div class={styles.content}>
         <Show when={gameState().isGameOver}>
           <div classList={{
@@ -98,7 +122,7 @@ const TetrisPage: Component = () => {
         </div>
 
         <div class={styles.tetris} style={{
-          "grid-template-columns": `repeat(${width - 1}, 1fr) minmax(0, 1fr)`
+          "grid-template-columns": `repeat(${screen()[0].pixels.length - 1}, 1fr) minmax(0, 1fr)`
         }}>
           {screen().map((row) => renderRow(row))}
         </div>
@@ -112,8 +136,9 @@ const TetrisPage: Component = () => {
           <div class={styles.controlKey} onclick={() => bindKey('pause')}>Pause: {keyBinding().pause}</div>
         </div>
       </div>
+
       <footer class={styles.footer}>
-        build: {__COMMIT_HASH__} on: {__BUILD_DATE__}
+        <a href="https://github.com/pawel-mika/solid-tetris">Solid Tetris</a>, Work in progress, version: {__APP_VERSION__}, build: {__COMMIT_HASH__}, on: {__BUILD_DATE__}
       </footer>
     </div>
   );

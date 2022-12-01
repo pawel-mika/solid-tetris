@@ -10,24 +10,36 @@
     background-color: #282c34;
     border-bottom: 1px solid lightblue;
     display: grid;
+    grid-auto-flow: column;
     align-content: center;
     justify-content: flex-start;
-    font-size: 1.5em;
+    font-size: 2em;
     color: white;
     padding: 1vw;
     height: 1vh;
+    column-gap: 1vw;
+    align-items: center;
+
+    select {
+        font-size: 3vh;
+    }
 }
 
 .footer {
     border-top: 1px solid lightblue;
     background-color: #282c34;
     display: grid;
+    grid-auto-flow: column;
     align-content: center;
     justify-content: flex-start;
     font-size: 1em;
     color: white;
     padding: 1vw;
     height: 1vh;
+
+    a {
+        color: yellow;
+    }
 }
 
 .content {
@@ -105,6 +117,10 @@
     }
 }
 
+.smallText {
+    font-size: 0.5em;
+}
+
 .controlKey {
     cursor: pointer;
     border-bottom: 1px solid rgb(36, 91, 109);
@@ -131,7 +147,7 @@
 
     &.p2 {
         background-color: rgb(131, 18, 74);
-        animation: pixels-out forwards 0.5s cubic-bezier(0,.75,.5,1);
+        animation: pixels-out forwards 0.75s cubic-bezier(0,.75,.5,1);
     }
 
     &.animate-down {
