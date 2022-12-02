@@ -142,7 +142,7 @@ const createTetrisBoard = (): TetrisBoard => {
     }
 
     const mainLoop = () => {
-        if (gameState.isPaused) {
+        if (gameState.isPaused || gameState.isGameOver) {
             return;
         }
 
@@ -295,7 +295,7 @@ const createTetrisBoard = (): TetrisBoard => {
         setGameState(gameState);
     }
 
-    reset();
+    // reset();
 
     return {
         nextTile,

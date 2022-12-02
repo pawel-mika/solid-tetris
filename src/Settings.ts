@@ -45,6 +45,12 @@ class Settings {
   }, {
     name: 'Hard',
     gameTick: 500,
+  }, {
+    name: 'Ultra',
+    gameTick: 250,
+  }, {
+    name: 'Ridiculous',
+    gameTick: 125,
   });
 
   private keyBindingPrefix = 'settings.kb.';

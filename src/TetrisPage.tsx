@@ -40,7 +40,7 @@ const TetrisPage: Component = () => {
   const setRandomRemovingAnimation = (pixel: Pixel) => {
     const anims = [styles['pixels-out-1'], styles['pixels-out-2']];
     const anim = anims[Math.floor(Math.random() * anims.length)];
-    pixel.style = { ...pixel.style, 'animation-name': anim };
+    pixel.style = { ...pixel.style, 'animation-name': anim, 'animation-duration': `${Settings.getDifficulties()[0].gameTick / 1000}s` };
     return pixel;
   }
 
