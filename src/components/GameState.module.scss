@@ -1,0 +1,51 @@
+.gameState {
+    position: absolute;
+    display: grid;
+    width: 100%;
+    top: 50%;
+}
+
+.gameOver,
+.paused,
+.bindKey {
+    display: grid;
+    position: absolute;
+    width: 100%;
+    pointer-events: none;
+    font-size: 25vh;
+    align-self: center;
+    align-content: center;
+    text-shadow: 6px 6px 8px rgb(9 9 18);
+
+    &.animate-in {
+        animation: big-label-in forwards 0.25s cubic-bezier(0.5, 0, 0, 1.25);
+    }
+
+    &.animate-out {
+        animation: big-label-out forwards 0.5s cubic-bezier(0.5, 0, 0, 1.25);
+    }
+
+    @keyframes big-label-in {
+        0% {
+            transform: translateY(-100vh);
+            filter: opacity(0) blur(10vh);
+        }
+
+        100% {
+            transform: translateY(0vh);
+            filter: opacity(1) blur(0);
+        }
+    }
+
+    @keyframes big-label-out {
+        0% {
+            transform: translateY(0vh);
+            filter: opacity(1) blur(0vh);
+        }
+
+        100% {
+            transform: translateY(-100vh);
+            filter: opacity(0) blur(10vh);
+        }
+    }
+}
