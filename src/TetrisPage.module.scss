@@ -95,43 +95,60 @@
     border-bottom: 1px solid rgb(26, 68, 82);
 }
 
-.pixel {
+.pixelWrapper {
     display: grid;
+    align-content: center;
     min-width: 3vh;
     min-height: 3vh;
-    font-size: 1vh;
-    align-content: center;
+    align-items: center;
+    justify-items: center;
 
-    &.p0 {
-        background-color: transparent;
+    .pointsWrapper {
+        position: absolute;
+        display: grid;
+        font-size: 1vh;
+        animation: points-out forwards 1s cubic-bezier(0, .75, .5, 1);
+        text-shadow: 1px 1px 2px rgb(9 9 18);
     }
 
-    &.p1 {
-        background-color: transparent;
-        // background: linear-gradient(45deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 40%, rgba(255,255,255,1) 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0) 100%);
-        // background-size: 200% 200%;
-        // animation: gradient 1s ease-in-out infinite;
-    }
+    .pixel {
+        display: grid;
+        min-width: 3vh;
+        min-height: 3vh;
+        font-size: 1vh;
+        align-content: center;
 
-    &.p2 {
-        background-color: rgb(131, 18, 74);
-        animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
-    }
+        &.p0 {
+            background-color: transparent;
+        }
 
-    // &.animate-down {
-    //     animation: pixels-move forwards 1s linear;
-    // }
+        &.p1 {
+            background-color: transparent;
+        }
+
+        &.p2 {
+            background-color: rgb(131, 18, 74);
+            animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
+        }
+    }
 }
 
-// @keyframes pixels-move {
-//     0% {
-//         transform: translateY(0);
-//     }
+@keyframes points-out {
+    0% {
+        transform: translateY(0) scale(0);
+        filter: opacity(1);
+    }
 
-//     100% {
-//         transform: translateY(3vh);
-//     }
-// }
+    80% {
+        transform: translateY(-5vh) scale(2.5);
+        filter: opacity(1);
+    }
+
+    100% {
+        transform: translateY(-5vh) scale(2);
+        filter: opacity(0);
+    }
+}
 
 @keyframes pixels-out-1 {
     0% {

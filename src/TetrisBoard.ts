@@ -1,7 +1,7 @@
 import { Accessor, createEffect, createSignal, Setter } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 import BlockFactory from './BlockFactory';
-import Settings, { BoardConfig } from './Settings';
+import Settings, { BoardConfig, Difficulty } from './Settings';
 import TilesUtils from './TilesUtils';
 
 export enum PixelType {
@@ -16,6 +16,7 @@ export type TScreen = Array<Row>;
 export interface Pixel {
     type: PixelType;
     style?: JSX.CSSProperties;
+    points?: number;
 }
 
 export interface Tile {
@@ -43,6 +44,7 @@ export interface TetrisBoard {
     bindControlKey: (key: string) => void;
     setBoardConfig: Setter<BoardConfig>;
     boardConfig: Accessor<BoardConfig>;
+    difficulty: Accessor<Difficulty>;
 }
 
 export interface GameState {
@@ -59,9 +61,10 @@ export interface GameState {
  * @returns base tetris board implementation
  */
 const createTetrisBoard = (): TetrisBoard => {
+    const [difficulty, setDifficulty] = createSignal<Difficulty>(Settings.getDifficulties()[0]);
     const [boardConfig, setBoardConfig] = createSignal<BoardConfig>(Settings.loadBoardConfig());
 
-    const GAME_TICK = Settings.getDifficulties()[0].gameTick;
+    const GAME_TICK = difficulty().gameTick;
     let BOARD_WIDTH = boardConfig().width;
     let BOARD_HEIGHT = boardConfig().height;
 
@@ -97,7 +100,7 @@ const createTetrisBoard = (): TetrisBoard => {
     const [getGameState, setGameState] = createSignal<GameState>(gameState, { equals: false });
 
     const bindControlKey = (key: string) => {
-        pause();
+        gameState.isPaused = true;
         gameState.bindKey = key;
         setGameState(gameState);
     }
@@ -156,6 +159,7 @@ const createTetrisBoard = (): TetrisBoard => {
         }
 
         screen = clearFullLines(screen);
+        screen = clearPixelPoints(screen);
 
         tile.possibleTop = tile.top + 1;
 
@@ -163,13 +167,15 @@ const createTetrisBoard = (): TetrisBoard => {
         deltaTile = { ...tile };
         deltaTile.top += 1;
         if (detectCollision(deltaTile, screen)) {
-            addScore(TilesUtils.getNonEmptyPixelsLenght(tile));
+            // calculateScorePerTile(tile);
+            addScore(getPointsForTile(tile));
             screen = mixinTileToScreen(tile, screen);
             tile = nextTile();
             setNextTile(createTile());
         }
 
         screen = markFullLines(screen);
+        calculateScorePerPixel();
         calculateDeltaTilePosition();
         setActualScreen(getActualScreen());
     }
@@ -224,11 +230,34 @@ const createTetrisBoard = (): TetrisBoard => {
         });
         const diff = screen.length - clearedScreen.length;
         if (diff > 0) {
-            addScore(100 * diff * diff * (Settings.getDifficulties()[0].gameTick / 1000 / 2));
+            addScore(getPointsForRows(diff));
             return [...Array<Row>(diff).fill(createRow()), ...clearedScreen];
         }
         return screen;
-    };
+    }
+    
+    const clearPixelPoints = (screen: TScreen): TScreen => {
+        screen.forEach((row: Row) => row.pixels.forEach((pixel: Pixel) => pixel.points = 0));
+        return screen;
+    }
+
+    const calculateScorePerTile = (tile: Tile) => {
+        const tilePoints = getPointsForTile(tile);
+        const pixelsCount = TilesUtils.getNonEmptyPixelsLenght(tile);
+        TilesUtils.getNonEmptyPixels(tile).forEach((pixel: Pixel) => pixel.points = tilePoints / pixelsCount);
+    }
+
+    const calculateScorePerPixel = () => {
+        const fullLines = TilesUtils.getFullLines(screen);
+        if(fullLines) {
+            const totalPoints = getPointsForRows(fullLines.length);
+            fullLines.forEach((row: Row) => row.pixels.forEach((pixel: Pixel) => pixel.points = roundPoints(totalPoints / (fullLines.length * fullLines[0].pixels.length))));
+        }
+    }
+
+    const getPointsForRows = (count: number) => roundPoints(100 * count * count * (1 / GAME_TICK * 1000));
+
+    const getPointsForTile = (tile: Tile) => roundPoints(TilesUtils.getNonEmptyPixelsLenght(tile) * (1 / GAME_TICK * 1000));
 
     const detectCollision = (tile: Tile, screen: TScreen): boolean => {
         const block = tile.block;
@@ -292,8 +321,11 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const addScore = (value: number): void => {
         gameState.score += value;
+        gameState.score = roundPoints(gameState.score);
         setGameState(gameState);
     }
+
+    const roundPoints = (value: number) => Math.round(value * 100) / 100;
 
     // reset();
 
@@ -307,7 +339,8 @@ const createTetrisBoard = (): TetrisBoard => {
         gameState: getGameState,
         bindControlKey,
         setBoardConfig,
-        boardConfig
+        boardConfig,
+        difficulty
     }
 }
 

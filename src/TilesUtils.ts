@@ -52,8 +52,20 @@ class TilesUtils {
         }) != undefined;
     }
 
+    public getFullLines(screen: TScreen): Array<Row> {
+        return screen.filter((row: Row) => {
+            const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
+            return taken === row.pixels.length;
+        });
+    }
+
+    public getNonEmptyPixels = (tile: Tile): Array<Pixel> => {
+        return tile.block.reduce((acc, rows) => [...acc, ...rows.filter((pixel) => pixel.type !== PixelType.EMPTY)], new Array<Pixel>());
+    }
+
     public getNonEmptyPixelsLenght = (tile: Tile): number => {
-        return tile.block.reduce((acc, rows) => acc + rows.filter((pixel) => pixel.type !== PixelType.EMPTY).length, 0);
+        // return tile.block.reduce((acc, rows) => acc + rows.filter((pixel) => pixel.type !== PixelType.EMPTY).length, 0);
+        return this.getNonEmptyPixels(tile).length;
     }
 
     private static createNewInstance(): TilesUtils {

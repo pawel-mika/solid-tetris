@@ -20,28 +20,37 @@ const TetrisPage: Component = () => {
     bindControlKey,
     nextTile,
     boardConfig,
-    setBoardConfig
+    setBoardConfig,
+    difficulty
   } = createTetrisBoard();
 
   const [hiScore, setHiScore] = createSignal<string>(getHiScore());
   const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), { equals: false });
 
   const renderPixel = (pixel: Pixel) => {
-    if(pixel.type === PixelType.REMOVING) {
+    if (pixel.type === PixelType.REMOVING) {
       pixel = setRandomRemovingAnimation(pixel);
     }
-    return (<div classList={{
-      [styles.pixel]: true,
-      [styles.p1]: pixel.type === PixelType.TAKEN,
-      [styles.p2]: pixel.type === PixelType.REMOVING
-    }}
-    style={ pixel.type !== PixelType.EMPTY ? pixel.style : {} }>
-  </div>)}
+    return (<div class={styles.pixelWrapper}>
+      <Show when={pixel.points !== 0}>
+        <div class={styles.pointsWrapper}>
+          {pixel.points}
+        </div>
+      </Show>
+      <div classList={{
+        [styles.pixel]: true,
+        [styles.p1]: pixel.type === PixelType.TAKEN,
+        [styles.p2]: pixel.type === PixelType.REMOVING,
+      }}
+        style={pixel.type !== PixelType.EMPTY ? pixel.style : {}}>
+      </div>
+    </div>)
+  }
 
   const setRandomRemovingAnimation = (pixel: Pixel) => {
     const anims = [styles['pixels-out-1'], styles['pixels-out-2']];
     const anim = anims[Math.floor(Math.random() * anims.length)];
-    pixel.style = { ...pixel.style, 'animation-name': anim, 'animation-duration': `${Settings.getDifficulties()[0].gameTick / 1000}s` };
+    pixel.style = { ...pixel.style, 'animation-name': anim, 'animation-duration': `${difficulty().gameTick / 1000}s` };
     return pixel;
   }
 
@@ -100,7 +109,7 @@ const TetrisPage: Component = () => {
       </header>
 
       <div class={styles.content}>
-        <GameStateOverlay gameState={gameState}/>
+        <GameStateOverlay gameState={gameState} />
         <div class={styles.info}>
           <p><b>Score: {gameState().score}</b></p>
           <p>Hi Score: {hiScore()}</p>
