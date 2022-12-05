@@ -76,37 +76,6 @@
     animation: gradient 15s ease infinite;
 }
 
-.gameOver,
-.paused {
-    display: grid;
-    position: absolute;
-    width: 100%;
-    pointer-events: none;
-    font-size: 30vh;
-    align-self: center;
-    align-content: center;
-
-    &.animate-in {
-        animation: big-label forwards 0.25s cubic-bezier(0.5, 0, 0, 1.25);
-    }
-
-    &.animate-out {
-        animation: big-label backwards 0.25s cubic-bezier(0.5, 0, 0, 1.25);
-    }
-
-    @keyframes big-label {
-        0% {
-            transform: translateY(-100vh);
-            filter: opacity(0) blur(16vh);
-        }
-
-        100% {
-            transform: translateY(0vh);
-            filter: opacity(1) blur(0);
-        }
-    }
-}
-
 .help,
 .info {
     font-size: 3vh;

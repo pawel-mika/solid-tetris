@@ -1,4 +1,5 @@
 import { Component, createEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import GameStateOverlay from './components/GameState';
 import Settings, { KeyBinding } from "./Settings";
 import createTetrisBoard, { Pixel, PixelType, Row } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
@@ -40,7 +41,7 @@ const TetrisPage: Component = () => {
   const setRandomRemovingAnimation = (pixel: Pixel) => {
     const anims = [styles['pixels-out-1'], styles['pixels-out-2']];
     const anim = anims[Math.floor(Math.random() * anims.length)];
-    pixel.style = { ...pixel.style, 'animation-name': anim };
+    pixel.style = { ...pixel.style, 'animation-name': anim, 'animation-duration': `${Settings.getDifficulties()[0].gameTick / 1000}s` };
     return pixel;
   }
 
@@ -99,25 +100,7 @@ const TetrisPage: Component = () => {
       </header>
 
       <div class={styles.content}>
-        <Show when={gameState().isGameOver}>
-          <div classList={{
-            [styles.gameOver]: true,
-            [styles['animate-in']]: true
-          }}><span>Game Over</span></div>
-        </Show>
-        <Show when={gameState().isPaused && !gameState().bindKey}>
-          <div classList={{
-            [styles.paused]: true,
-            [styles['animate-in']]: true
-          }}><span>Paused</span></div>
-        </Show>
-        <Show when={gameState().bindKey}>
-          <div classList={{
-            [styles.paused]: true,
-            [styles['animate-in']]: true
-          }}><span>Press key for '{gameState().bindKey}'</span></div>
-        </Show>
-
+        <GameStateOverlay gameState={gameState}/>
         <div class={styles.info}>
           <p><b>Score: {gameState().score}</b></p>
           <p>Hi Score: {hiScore()}</p>
