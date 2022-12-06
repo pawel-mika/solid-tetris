@@ -107,8 +107,8 @@
         position: absolute;
         display: grid;
         font-size: 1vh;
-        animation: points-out forwards 1s cubic-bezier(0, .75, .5, 1);
-        text-shadow: 1px 1px 2px rgb(9 9 18);
+        animation: points-out forwards 2s cubic-bezier(0, .75, .5, 1);
+        text-shadow: 1px 1px 3px rgb(9 9 18);
     }
 
     .pixel {
@@ -145,7 +145,7 @@
     }
 
     100% {
-        transform: translateY(-5vh) scale(2);
+        transform: translateY(-5vh) scale(1);
         filter: opacity(0);
     }
 }

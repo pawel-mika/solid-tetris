@@ -159,7 +159,7 @@ const createTetrisBoard = (): TetrisBoard => {
         }
 
         screen = clearFullLines(screen);
-        screen = clearPixelPoints(screen);
+        // screen = clearPixelPoints(screen);
 
         tile.possibleTop = tile.top + 1;
 
@@ -167,7 +167,7 @@ const createTetrisBoard = (): TetrisBoard => {
         deltaTile = { ...tile };
         deltaTile.top += 1;
         if (detectCollision(deltaTile, screen)) {
-            // calculateScorePerTile(tile);
+            calculateScorePerTile(tile);
             addScore(getPointsForTile(tile));
             screen = mixinTileToScreen(tile, screen);
             tile = nextTile();

@@ -1,7 +1,8 @@
-import { Component, createEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import AnimableElement, { AnimableEvent } from './components/AnimableElement';
 import GameStateOverlay from './components/GameState';
 import Settings, { KeyBinding } from "./Settings";
-import createTetrisBoard, { Pixel, PixelType, Row } from "./TetrisBoard";
+import createTetrisBoard, { Pixel, PixelType, Row, TScreen } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
 
 declare const __APP_VERSION__: string;
@@ -27,16 +28,24 @@ const TetrisPage: Component = () => {
   const [hiScore, setHiScore] = createSignal<string>(getHiScore());
   const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), { equals: false });
 
+  const renderPoints = (pixel: Pixel) => (
+    <Show when={pixel.points !== 0}>
+      {/* <div class={styles.pointsWrapper}>
+        {pixel.points}
+      </div> */}
+        <AnimableElement animOutClass={styles.pointsWrapper} 
+          // onAnimStart={(e:AnimableEvent) => {console.log('start', e) ; pixel.points = 0;}} 
+          onAnimEnd={(e:AnimableEvent) => {console.log('end', e) ; pixel.points = 0;}}>
+          <span>{pixel.points}</span>
+        </AnimableElement>
+    </Show>);
+
   const renderPixel = (pixel: Pixel) => {
     if (pixel.type === PixelType.REMOVING) {
       pixel = setRandomRemovingAnimation(pixel);
     }
     return (<div class={styles.pixelWrapper}>
-      <Show when={pixel.points !== 0}>
-        <div class={styles.pointsWrapper}>
-          {pixel.points}
-        </div>
-      </Show>
+      {renderPoints(pixel)}
       <div classList={{
         [styles.pixel]: true,
         [styles.p1]: pixel.type === PixelType.TAKEN,
@@ -55,6 +64,10 @@ const TetrisPage: Component = () => {
   }
 
   const renderRow = (row: Row) => row.pixels.map((pixel) => renderPixel(pixel));
+
+  const renderScreen = createMemo(() => {
+    return screen().map((row) => createMemo(() => renderRow(row)));
+  });
 
   onMount(() => {
     document.addEventListener('keydown', onKeyDown);
@@ -128,6 +141,7 @@ const TetrisPage: Component = () => {
           "grid-template-columns": `repeat(${screen()[0].pixels.length - 1}, 1fr) minmax(0, 1fr)`
         }}>
           {screen().map((row) => renderRow(row))}
+          {/* {renderScreen()} */}
         </div>
 
         <div class={styles.help}>
