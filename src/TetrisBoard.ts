@@ -35,7 +35,7 @@ export interface Row {
 
 export interface TetrisBoard {
     nextTile: Accessor<Tile>;
-    screen: Accessor<Array<Row>>;
+    screen: Accessor<TScreen>;
     onKeyDown: (e: KeyboardEvent) => void;
     reset: () => void;
     pause: (isPaused?: boolean) => void;
