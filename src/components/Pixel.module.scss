@@ -1,38 +1,21 @@
-.pixelWrapper {
+.pixel {
     display: grid;
-    align-content: center;
     min-width: 3vh;
     min-height: 3vh;
-    align-items: center;
-    justify-items: center;
+    font-size: 1vh;
+    align-content: center;
 
-    .pointsWrapper {
-        position: absolute;
-        display: grid;
-        font-size: 1vh;
-        animation: points-out forwards 1s cubic-bezier(0, .75, .5, 1);
-        text-shadow: 1px 1px 3px rgb(9 9 18);
+    &.p0 {
+        background-color: transparent;
     }
 
-    .pixel {
-        display: grid;
-        min-width: 3vh;
-        min-height: 3vh;
-        font-size: 1vh;
-        align-content: center;
+    &.p1 {
+        background-color: transparent;
+    }
 
-        &.p0 {
-            background-color: transparent;
-        }
-
-        &.p1 {
-            background-color: transparent;
-        }
-
-        &.p2 {
-            background-color: rgb(131, 18, 74);
-            animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
-        }
+    &.p2 {
+        background-color: rgb(131, 18, 74);
+        animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
     }
 }
 

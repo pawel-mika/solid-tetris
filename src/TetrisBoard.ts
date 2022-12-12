@@ -64,7 +64,7 @@ const createTetrisBoard = (): TetrisBoard => {
     const [difficulty, setDifficulty] = createSignal<Difficulty>(Settings.getDifficulties()[0]);
     const [boardConfig, setBoardConfig] = createSignal<BoardConfig>(Settings.loadBoardConfig());
 
-    const GAME_TICK = difficulty().gameTick;
+    let GAME_TICK = difficulty().gameTick;
     let BOARD_WIDTH = boardConfig().width;
     let BOARD_HEIGHT = boardConfig().height;
 
@@ -72,6 +72,10 @@ const createTetrisBoard = (): TetrisBoard => {
         BOARD_WIDTH = boardConfig().width;
         BOARD_HEIGHT = boardConfig().height;
         reset();
+    });
+
+    createEffect(() => {
+        GAME_TICK = difficulty().gameTick;
     });
 
     let keyBinding = Settings.getKeyBinding();
@@ -293,6 +297,7 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const reset = () => {
         pause();
+        setDifficulty(Settings.getDifficulties()[0]);
         clearInterval(gameState.gameInterval);
         gameState.score = 0;
         screen = createNewScreen();
@@ -322,7 +327,19 @@ const createTetrisBoard = (): TetrisBoard => {
     const addScore = (value: number): void => {
         gameState.score += value;
         gameState.score = roundPoints(gameState.score);
+        maybeIncreaseLevel();
         setGameState(gameState);
+    }
+
+    const maybeIncreaseLevel = (): void => {
+        const diffIndex = Settings.getDifficulties().findIndex((diff) => diff === difficulty());
+        const nextDiff = Settings.getDifficulties().length > diffIndex + 1 ? diffIndex + 1 : diffIndex;
+        const advanceAt = 5000 * nextDiff;
+        if(gameState.score >= advanceAt) {
+            setDifficulty(Settings.getDifficulties()[nextDiff]);
+            clearInterval(gameState.gameInterval);
+            gameState.gameInterval = window.setInterval(mainLoop, GAME_TICK);
+        }
     }
 
     const roundPoints = (value: number) => Math.round(value * 100) / 100;

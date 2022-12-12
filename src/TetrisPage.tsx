@@ -80,6 +80,10 @@ const TetrisPage: Component = () => {
           }</For>
         </select>
         <span class={styles.smallText}>Warning!<br />will reset the board!</span>
+        Level:
+        <span>{difficulty().name}</span>
+        <span class={styles.smallText}>(speed: {difficulty().gameTick}ms/drop)</span>
+        <span class={styles.smallText}>Advance every 5000 pts</span>
       </header>
 
       <div class={styles.content}>
