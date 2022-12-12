@@ -1,4 +1,4 @@
-import { Accessor, Component } from 'solid-js';
+import { Accessor, Component, createMemo } from 'solid-js';
 import { GameState } from '../TetrisBoard';
 
 import styles from './GameState.module.scss';
@@ -8,6 +8,8 @@ const GameStateOverlay: Component<{ gameState: Accessor<GameState> }> = (props) 
 
   const gameState = props.gameState;
 
+  const bindKeyValue = createMemo((prev?: string) => prev !== undefined ? prev : gameState().bindKey);
+
   return (<span class={styles.gameState}>
     <Modal show={gameState().isGameOver} hide={!gameState().isGameOver}>
       <span>Game Over</span>
@@ -16,7 +18,7 @@ const GameStateOverlay: Component<{ gameState: Accessor<GameState> }> = (props) 
       <span>Paused</span>
     </Modal>
     <Modal show={!!gameState().bindKey} hide={!gameState().bindKey}>
-      <span>Press key for '{gameState().bindKey}'</span>
+      <span>Press key for '{bindKeyValue()}'</span>
     </Modal>
   </span>)
 }

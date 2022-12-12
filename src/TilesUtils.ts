@@ -41,7 +41,6 @@ class TilesUtils {
         return screenA.find((row: Row, rIndex: number) => row.pixels.find((pixel: Pixel, pIndex: number) => pixel.type !== screenB[rIndex].pixels[pIndex].type)) === undefined;
     }
 
-    
     public hasFullLines = (screen: TScreen): boolean => {
         return screen.find((row, index) => {
             const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
@@ -52,8 +51,20 @@ class TilesUtils {
         }) != undefined;
     }
 
+    public getFullLines(screen: TScreen): Array<Row> {
+        return screen.filter((row: Row) => {
+            const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
+            return taken === row.pixels.length;
+        });
+    }
+
+    public getNonEmptyPixels = (tile: Tile): Array<Pixel> => {
+        return tile.block.reduce((acc, rows) => [...acc, ...rows.filter((pixel) => pixel.type !== PixelType.EMPTY)], new Array<Pixel>());
+    }
+
     public getNonEmptyPixelsLenght = (tile: Tile): number => {
-        return tile.block.reduce((acc, rows) => acc + rows.filter((pixel) => pixel.type !== PixelType.EMPTY).length, 0);
+        // return tile.block.reduce((acc, rows) => acc + rows.filter((pixel) => pixel.type !== PixelType.EMPTY).length, 0);
+        return this.getNonEmptyPixels(tile).length;
     }
 
     private static createNewInstance(): TilesUtils {
