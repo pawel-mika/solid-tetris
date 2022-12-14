@@ -255,13 +255,13 @@ const createTetrisBoard = (): TetrisBoard => {
         const fullLines = TilesUtils.getFullLines(screen);
         if(fullLines) {
             const totalPoints = getPointsForRows(fullLines.length);
-            fullLines.forEach((row: Row) => row.pixels.forEach((pixel: Pixel) => pixel.points = roundPoints(totalPoints / (fullLines.length * fullLines[0].pixels.length))));
+            fullLines.forEach((row: Row) => row.pixels.forEach((pixel: Pixel) => pixel.points = TilesUtils.roundPoints(totalPoints / (fullLines.length * fullLines[0].pixels.length))));
         }
     }
 
-    const getPointsForRows = (count: number) => roundPoints(100 * count * count * (1 / GAME_TICK * 1000));
+    const getPointsForRows = (count: number) => TilesUtils.roundPoints(100 * count * count * (1 / GAME_TICK * 1000));
 
-    const getPointsForTile = (tile: Tile) => roundPoints(TilesUtils.getNonEmptyPixelsLenght(tile) * (1 / GAME_TICK * 1000));
+    const getPointsForTile = (tile: Tile) => TilesUtils.roundPoints(TilesUtils.getNonEmptyPixelsLenght(tile) * (1 / GAME_TICK * 1000));
 
     const detectCollision = (tile: Tile, screen: TScreen): boolean => {
         const block = tile.block;
@@ -326,7 +326,7 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const addScore = (value: number): void => {
         gameState.score += value;
-        gameState.score = roundPoints(gameState.score);
+        gameState.score = TilesUtils.roundPoints(gameState.score);
         maybeIncreaseLevel();
         setGameState(gameState);
     }
@@ -341,10 +341,6 @@ const createTetrisBoard = (): TetrisBoard => {
             gameState.gameInterval = window.setInterval(mainLoop, GAME_TICK);
         }
     }
-
-    const roundPoints = (value: number) => Math.round(value * 100) / 100;
-
-    // reset();
 
     return {
         nextTile,

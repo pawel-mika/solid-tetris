@@ -1,5 +1,4 @@
 import { mergeProps, ParentComponent, ParentProps } from 'solid-js';
-// import styles from './AnimableElement.module.scss';
 
 export declare type AnimableProps = {
     animInClass?: string;

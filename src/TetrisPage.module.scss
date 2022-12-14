@@ -52,6 +52,7 @@
     color: white;
     overflow: hidden;
     grid-template-columns: 1fr 1fr 1fr;
+    perspective: 100vh;
     // background: linear-gradient(45deg, #421c03, #0a434b, #250f75, #79071a);
     // background-size: 600% 600%;
     // animation: gradient 30s ease infinite;
@@ -93,6 +94,36 @@
 .controlKey {
     cursor: pointer;
     border-bottom: 1px solid rgb(26, 68, 82);
+}
+
+.score {
+    display: grid;
+    position: absolute;
+    width: 100%;
+    font-size: 25vh;
+    align-self: center;
+    align-content: center;
+    color: #ffffff;
+    text-shadow: 6px 6px 8px rgb(0 0 0);
+    animation: big-label-in forwards 1s cubic-bezier(0.5, 0, 0, 1.25);
+    transform-style: preserve-3d;
+
+    @keyframes big-label-in {
+        0% {
+            transform: translateZ(-2000vh);
+            filter: opacity(0);
+        }
+        
+        50% {
+            transform: translateZ(-250vh);
+            filter: opacity(0.9);
+        }
+
+        100% {
+            transform: translateZ(150vh);
+            filter: opacity(0);
+        }
+    }
 }
 
 @keyframes gradient {

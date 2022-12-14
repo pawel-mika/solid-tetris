@@ -1,13 +1,19 @@
-import { Component, createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { Component, createEffect, createRenderEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import AnimableElement from './components/AnimableElement';
 import GameStateOverlay from './components/GameState';
 import PixelComponent from './components/Pixel';
 import Settings, { KeyBinding } from "./Settings";
-import createTetrisBoard, { Pixel, PixelType } from "./TetrisBoard";
+import createTetrisBoard, { Pixel } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
+import TilesUtils from './TilesUtils';
 
 declare const __APP_VERSION__: string;
 declare const __COMMIT_HASH__: string;
 declare const __BUILD_DATE__: string;
+
+declare type ScoreDiff = {
+  score: number;
+}
 
 const TetrisPage: Component = () => {
   const getHiScore = () => sessionStorage.getItem('hiScore') || '0';
@@ -25,6 +31,7 @@ const TetrisPage: Component = () => {
     difficulty
   } = createTetrisBoard();
 
+  const [scoreDiff, setScoreDiff] = createSignal<Array<ScoreDiff>>(new Array());
   const [hiScore, setHiScore] = createSignal<string>(getHiScore());
   const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), { equals: false });
 
@@ -68,7 +75,29 @@ const TetrisPage: Component = () => {
     }
   });
 
-  const renderScreen = () => screen().map((row) => row.pixels.map((pixel) => (<PixelComponent pixel={pixel} difficulty={difficulty()} />)));
+  createRenderEffect<number>((prevScore) => {
+    const current = gameState();
+    const diff = TilesUtils.roundPoints(current.score - prevScore);
+    const diffArray = scoreDiff();
+    if (diff > 0) {
+      diffArray.push({ score: diff });
+      setScoreDiff([...diffArray]);
+    }
+    return current.score;
+  }, gameState().score);
+
+  const removeScoreDiff = (index: number) => {
+    const diffArray = scoreDiff();
+    diffArray.splice(index, 1);
+    setScoreDiff([...diffArray]);
+  }
+
+  // const renderScreen = () => screen().map((row) => row.pixels.map((pixel) => (<PixelComponent pixel={pixel} difficulty={difficulty()} />)));
+
+  // speed up rendering a little?
+  const renderScreen = () => <For each={screen().reduce((pixels, currentRow) => { pixels.push(...currentRow.pixels); return pixels; }, new Array<Pixel>())}>
+    {(pixel, pindex) => <PixelComponent pixel={pixel} difficulty={difficulty()} />}
+  </For >
 
   return (
     <div class={styles.App}>
@@ -101,6 +130,11 @@ const TetrisPage: Component = () => {
             <button onclick={newGame}>New Game</button>
           </Show>
         </div>
+
+        <For each={scoreDiff()}>
+          {(item, index) =>
+            <AnimableElement onAnimEnd={() => removeScoreDiff(index())} animInClass={styles.score}>{item.score}</AnimableElement>}
+        </For>
 
         <div class={styles.tetris} style={{
           "grid-template-columns": `repeat(${screen()[0].pixels.length - 1}, 1fr) minmax(0, 1fr)`
