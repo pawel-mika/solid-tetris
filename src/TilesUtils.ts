@@ -67,6 +67,8 @@ class TilesUtils {
         return this.getNonEmptyPixels(tile).length;
     }
 
+    public roundPoints = (value: number) => Math.round(value * 100) / 100;
+
     private static createNewInstance(): TilesUtils {
         this.instance = new TilesUtils();
         return this.instance;
