@@ -3,6 +3,7 @@ import { JSX } from 'solid-js/jsx-runtime';
 import BlockFactory from './BlockFactory';
 import Settings, { BoardConfig, Difficulty } from './Settings';
 import TilesUtils from './TilesUtils';
+import { SaveGame } from './hooks/saveGame';
 
 export enum PixelType {
     EMPTY,
@@ -45,12 +46,15 @@ export interface TetrisBoard {
     setBoardConfig: Setter<BoardConfig>;
     boardConfig: Accessor<BoardConfig>;
     difficulty: Accessor<Difficulty>;
+    getSaveGame: () => SaveGame;
+    useSavedGame: (save: SaveGame) => void;
 }
 
 export interface GameState {
     isPaused: boolean;
     isGameOver: boolean;
     score: number;
+    difficulty?: Difficulty;
     gameInterval?: number;
     timeTillAdvance?: number;
     bindKey?: string;
@@ -297,7 +301,7 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const reset = () => {
         pause();
-        setDifficulty(Settings.getDifficulties()[0]);
+        changeDifficulty(Settings.getDifficulties()[0]);
         clearInterval(gameState.gameInterval);
         gameState.score = 0;
         screen = createNewScreen();
@@ -336,10 +340,28 @@ const createTetrisBoard = (): TetrisBoard => {
         const nextDiff = Settings.getDifficulties().length > diffIndex + 1 ? diffIndex + 1 : diffIndex;
         const advanceAt = 5000 * nextDiff;
         if(gameState.score >= advanceAt) {
-            setDifficulty(Settings.getDifficulties()[nextDiff]);
+            changeDifficulty(Settings.getDifficulties()[nextDiff]);
             clearInterval(gameState.gameInterval);
             gameState.gameInterval = window.setInterval(mainLoop, GAME_TICK);
         }
+    }
+
+    const changeDifficulty = (newDifficulty: Difficulty) => {
+        setDifficulty(newDifficulty);
+        gameState.difficulty = newDifficulty;
+    }
+
+    const getSaveGame = (): SaveGame => {
+        return { currentTile: tile, gameState, screen };
+    }
+
+    const useSavedGame = (save: SaveGame): void => {
+        screen = save.screen;
+        tile = save.currentTile;
+        gameState.score = save.gameState.score;
+        setActualScreen(screen);
+        setGameState(save.gameState);
+        pause(false);
     }
 
     return {
@@ -353,7 +375,9 @@ const createTetrisBoard = (): TetrisBoard => {
         bindControlKey,
         setBoardConfig,
         boardConfig,
-        difficulty
+        difficulty,
+        getSaveGame,
+        useSavedGame
     }
 }
 

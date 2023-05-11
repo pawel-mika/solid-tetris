@@ -6,6 +6,8 @@ import Settings, { KeyBinding } from "./Settings";
 import createTetrisBoard, { Pixel } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
 import TilesUtils from './TilesUtils';
+import { SaveGame, useCreateSave, useLoadSavedGame } from './hooks/saveGame';
+import LoadGameModal from './components/LoadGameModal';
 
 declare const __APP_VERSION__: string;
 declare const __COMMIT_HASH__: string;
@@ -28,7 +30,9 @@ const TetrisPage: Component = () => {
     nextTile,
     boardConfig,
     setBoardConfig,
-    difficulty
+    difficulty,
+    getSaveGame,
+    useSavedGame
   } = createTetrisBoard();
 
   const [scoreDiff, setScoreDiff] = createSignal<Array<ScoreDiff>>(new Array());
@@ -37,12 +41,24 @@ const TetrisPage: Component = () => {
 
   onMount(() => {
     document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('blur', () => doPause());
+    window.addEventListener('beforeunload', onBeforeUnload);  // maybe save on every step instead? wouldn't be too costly IMO
   });
 
   onCleanup(() => {
     document.removeEventListener('keydown', onKeyDown);
+    window.removeEventListener('beforeunload', onBeforeUnload);
     pause();
   });
+
+  const doPause = () => {
+    useCreateSave(getSaveGame());
+    pause();
+  }
+
+  const onBeforeUnload = () => {
+    useCreateSave(getSaveGame());
+  }
 
   const newGame = () => {
     reset();
@@ -92,8 +108,11 @@ const TetrisPage: Component = () => {
     setScoreDiff([...diffArray]);
   }
 
-  // const renderScreen = () => screen().map((row) => row.pixels.map((pixel) => (<PixelComponent pixel={pixel} difficulty={difficulty()} />)));
+  const onGameLoaded = (save: SaveGame) => {
+    useSavedGame(save);
+  }
 
+  // const renderScreen = () => screen().map((row) => row.pixels.map((pixel) => (<PixelComponent pixel={pixel} difficulty={difficulty()} />)));
   // speed up rendering a little?
   const renderScreen = () => <For each={screen().reduce((pixels, currentRow) => { pixels.push(...currentRow.pixels); return pixels; }, new Array<Pixel>())}>
     {(pixel, pindex) => <PixelComponent pixel={pixel} difficulty={difficulty()} />}
@@ -108,15 +127,16 @@ const TetrisPage: Component = () => {
             config => <option value={config.name}>{config.name}</option>
           }</For>
         </select>
-        <span class={styles.smallText}>Warning!<br />will reset the board!</span>
+        <span class={styles.smallText}><b>Warning!</b><br/>Changing board size will reset the board!</span>
         Level:
-        <span>{difficulty().name}</span>
+        <span><b>{difficulty().name}</b></span>
         <span class={styles.smallText}>(speed: {difficulty().gameTick}ms/drop)</span>
         <span class={styles.smallText}>Advance every 5000 pts</span>
       </header>
 
       <div class={styles.content}>
         <GameStateOverlay gameState={gameState} />
+        <LoadGameModal onGameLoaded={onGameLoaded} />
         <div class={styles.info}>
           <p><b>Score: {gameState().score}</b></p>
           <p>Hi Score: {hiScore()}</p>
