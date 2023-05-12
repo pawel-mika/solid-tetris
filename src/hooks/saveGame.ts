@@ -8,7 +8,9 @@ export interface SaveGame {
     currentTile: Tile;
 }
 
-export const useCreateSave = (save: SaveGame) => {
+export const useHasSavedGame = (): boolean => useLoadSavedGame() !== null;
+
+export const useCreateSave = (save: SaveGame): void => {
     sessionStorage.setItem(sessionSaveKey, JSON.stringify(save));
 }
 

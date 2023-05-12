@@ -27,6 +27,23 @@ Pretty standard tetris by default:
 
 But you can rearrange according to your preferences.
 
+### Autopause
+
+Whenever the game window loses focus, the game is automatically paused.
+
+### Game save
+
+If you close the window or reload the page during in-game, the save would be created.
+When you later get back to the game and the save would be discovered, you'll see modal
+window with question whether you want to load it.
+
+Save will be only created if
+another is not present already or if the game is in progress (not in game over state).
+
 ## Example WIP Screen
 
 ![Screen](./docs/assets/game_screen_1.png)
+
+## Working game
+
+You can see the game in action deployed on [github pages](https://pawel-mika.github.io/solid-tetris/). Enjoy!
