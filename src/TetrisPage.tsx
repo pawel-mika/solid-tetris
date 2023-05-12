@@ -6,7 +6,7 @@ import Settings, { KeyBinding } from "./Settings";
 import createTetrisBoard, { Pixel } from "./TetrisBoard";
 import styles from './TetrisPage.module.scss';
 import TilesUtils from './TilesUtils';
-import { SaveGame, useCreateSave, useLoadSavedGame } from './hooks/saveGame';
+import { SaveGame, useCreateSave, useHasSavedGame, useLoadSavedGame } from './hooks/saveGame';
 import LoadGameModal from './components/LoadGameModal';
 
 declare const __APP_VERSION__: string;
@@ -56,7 +56,10 @@ const TetrisPage: Component = () => {
   }
 
   const onBeforeUnload = () => {
-    useCreateSave(getSaveGame());
+    const shouldSave = !useHasSavedGame() && !gameState().isGameOver;
+    if(shouldSave) {
+      useCreateSave(getSaveGame());
+    }
   }
 
   const newGame = () => {
