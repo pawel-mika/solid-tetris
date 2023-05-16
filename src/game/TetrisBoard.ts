@@ -1,64 +1,19 @@
-import { Accessor, createEffect, createSignal, Setter } from 'solid-js';
-import { JSX } from 'solid-js/jsx-runtime';
-import BlockFactory from './BlockFactory';
-import Settings, { BoardConfig, Difficulty } from './Settings';
-import TilesUtils from './TilesUtils';
-import { SaveGame } from './hooks/saveGame';
-
-export enum PixelType {
-    EMPTY,
-    TAKEN,
-    REMOVING,
-}
-
-export type TBlock = Array<Array<Pixel>>;
-export type TScreen = Array<Row>;
-
-export interface Pixel {
-    type: PixelType;
-    style?: JSX.CSSProperties;
-    points?: number;
-}
-
-export interface Tile {
-    block: TBlock;
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    possibleTop?: number;
-    possibleLeft?: number;
-}
-
-export interface Row {
-    pixels: Array<Pixel>;
-}
-
-export interface TetrisBoard {
-    nextTile: Accessor<Tile>;
-    screen: Accessor<TScreen>;
-    onKeyDown: (e: KeyboardEvent) => void;
-    reset: () => void;
-    pause: (isPaused?: boolean) => void;
-    start: () => void;
-    gameState: Accessor<GameState>;
-    bindControlKey: (key: string) => void;
-    setBoardConfig: Setter<BoardConfig>;
-    boardConfig: Accessor<BoardConfig>;
-    difficulty: Accessor<Difficulty>;
-    getSaveGame: () => SaveGame;
-    useSavedGame: (save: SaveGame) => void;
-}
-
-export interface GameState {
-    isPaused: boolean;
-    isGameOver: boolean;
-    score: number;
-    difficulty?: Difficulty;
-    gameInterval?: number;
-    timeTillAdvance?: number;
-    bindKey?: string;
-}
+import { createEffect, createSignal } from 'solid-js';
+import { SaveGame } from '../hooks/saveGame';
+import { TetrisBoard } from '../model/Board';
+import { EGameMode, GameMode, GameState } from '../model/GameState';
+import { Pixel, PixelType } from '../model/Pixel';
+import { Row } from '../model/Row';
+import { TScreen } from '../model/Screen';
+import { BoardConfig, Difficulty } from '../model/Settings';
+import { TBlock, Tile } from '../model/Tile';
+import BlockFactory from '../utils/BlockFactory';
+import MiscUtils from '../utils/MiscUtils';
+import PerkFactory from '../utils/PerkFactory';
+import ScreenUtils from '../utils/ScreenUtils';
+import Settings from '../utils/Settings';
+import TilesUtils from '../utils/TilesUtils';
+import { PerkType } from '../model/Perk';
 
 /**
  * 
@@ -67,6 +22,7 @@ export interface GameState {
 const createTetrisBoard = (): TetrisBoard => {
     const [difficulty, setDifficulty] = createSignal<Difficulty>(Settings.getDifficulties()[0]);
     const [boardConfig, setBoardConfig] = createSignal<BoardConfig>(Settings.loadBoardConfig());
+    const [gameMode, setGameMode] = createSignal<GameMode>(Settings.loadGameMode());
 
     let GAME_TICK = difficulty().gameTick;
     let BOARD_WIDTH = boardConfig().width;
@@ -98,7 +54,7 @@ const createTetrisBoard = (): TetrisBoard => {
 
     let tile = createTile();
 
-    const createRow = (width = BOARD_WIDTH, type = PixelType.EMPTY): Row => ({ pixels: Array<Pixel>(width).fill({ type }) });
+    const createRow = (width = BOARD_WIDTH, type = PixelType.EMPTY): Row => ({ pixels: Array.from({length: width}, () => ScreenUtils.createPixel(type)) });
     const createNewScreen = (height = BOARD_HEIGHT) => Array<Row>(height).fill(createRow());
 
     let screen: TScreen;
@@ -145,6 +101,7 @@ const createTetrisBoard = (): TetrisBoard => {
             case keyBinding.pause.toLowerCase():
                 gameState.isPaused = !gameState.isPaused;
                 setGameState(gameState);
+                pausePerks();
             default:
                 break;
         }
@@ -166,8 +123,7 @@ const createTetrisBoard = (): TetrisBoard => {
             return;
         }
 
-        screen = clearFullLines(screen);
-        // screen = clearPixelPoints(screen);
+        screen = clearMarkedLines(screen);
 
         tile.possibleTop = tile.top + 1;
 
@@ -182,14 +138,14 @@ const createTetrisBoard = (): TetrisBoard => {
             setNextTile(createTile());
         }
 
-        screen = markFullLines(screen);
+        screen = ScreenUtils.markLinesToRemove(screen, BOARD_WIDTH);
         calculateScorePerPixel();
         calculateDeltaTilePosition();
         setActualScreen(getActualScreen());
     }
 
     const calculateDeltaTilePosition = () => {
-        // check left <-> right movement collision 
+        // check left <-> right movement collision
         let deltaTile = { ...tile };
         deltaTile.left = deltaTile.possibleLeft !== undefined ? deltaTile.possibleLeft : deltaTile.left;
         if (!detectCollision(deltaTile, screen)) {
@@ -220,32 +176,26 @@ const createTetrisBoard = (): TetrisBoard => {
         setGameState(gameState);
     }
 
-    const markFullLines = (screen: TScreen): TScreen => {
-        return screen.map((row, index) => {
-            const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
-            if (taken === BOARD_WIDTH) {
-                row.pixels.forEach((pixel) => pixel.type = PixelType.REMOVING);
-                return row;
-            }
-            return row;
-        });
-    }
-
-    const clearFullLines = (screen: TScreen): TScreen => {
+    const clearMarkedLines = (screen: TScreen): TScreen => {
         const clearedScreen = screen.filter((row, index) => {
-            const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
-            return taken !== BOARD_WIDTH;
+            const removedPixels = row.pixels.filter(({type}) => type === PixelType.REMOVING).length
+            return removedPixels === 0;
         });
         const diff = screen.length - clearedScreen.length;
+        // check perks in removed lines and act accordingly
+
         if (diff > 0) {
-            addScore(getPointsForRows(diff));
-            return [...Array<Row>(diff).fill(createRow()), ...clearedScreen];
+            // WIP TMP in this place - remove later drawing a perk from here!!
+            addScore(getPointsMultiplier(TilesUtils.getFullLines(screen)) * getPointsForRows(diff));
+            switch(gameMode().mode) {
+                case EGameMode.ARCADE:
+                    return [...Array<Row>(diff).fill(createRow()), ...drawPerkOnScreen(clearedScreen)];
+                case EGameMode.CLASSIC:
+                case EGameMode.ENDLESS:
+                default:
+                    return [...Array<Row>(diff).fill(createRow()), ...clearedScreen];
+            }
         }
-        return screen;
-    }
-    
-    const clearPixelPoints = (screen: TScreen): TScreen => {
-        screen.forEach((row: Row) => row.pixels.forEach((pixel: Pixel) => pixel.points = 0));
         return screen;
     }
 
@@ -257,10 +207,17 @@ const createTetrisBoard = (): TetrisBoard => {
 
     const calculateScorePerPixel = () => {
         const fullLines = TilesUtils.getFullLines(screen);
-        if(fullLines) {
+        // const multiplier = getPointsMultiplier(fullLines);
+        if (fullLines) {
             const totalPoints = getPointsForRows(fullLines.length);
             fullLines.forEach((row: Row) => row.pixels.forEach((pixel: Pixel) => pixel.points = TilesUtils.roundPoints(totalPoints / (fullLines.length * fullLines[0].pixels.length))));
         }
+    }
+
+    const getPointsMultiplier = (fullLines: Array<Row>): number => {
+        const pixelsWithPerks = fullLines.reduce<Array<Pixel>>((acc, row) => [...acc, ...row.pixels.filter(({perk}) => perk)], []);
+        const multipliers = pixelsWithPerks.filter(({perk}) => perk?.perkType === PerkType.POINT_MULTIPLIER);
+        return multipliers ? multipliers.reduce((acc, pixel) => acc * (pixel.perk?.multiplier || 1), 1) : 1;
     }
 
     const getPointsForRows = (count: number) => TilesUtils.roundPoints(100 * count * count * (1 / GAME_TICK * 1000));
@@ -284,6 +241,8 @@ const createTetrisBoard = (): TetrisBoard => {
         return collision;
     }
 
+    // probably here mixing tile to screen causes perk animation to restart as pixel with perk might be mutated?
+    // actually scrolling down a tile through a line containing perk causes it to reset
     const mixinTileToScreen = (theTile: Tile, screen: TScreen): TScreen => {
         return screen.map(
             (row, rowIndex) => {
@@ -297,6 +256,34 @@ const createTetrisBoard = (): TetrisBoard => {
                     });
                 return { ...row, pixels };
             });
+
+        // const newScreen = screen.map(row => ({ pixels: row.pixels.map(p => p) }));
+        // for(let tTop = 0; tTop < theTile.height; tTop++) {
+        //     for(let tLeft = 0; tLeft < theTile.width; tLeft++) {
+        //         if(theTile.block[tTop][tLeft].type !== PixelType.EMPTY) {
+        //             newScreen[tTop+theTile.height].pixels[tLeft+theTile.left] = theTile.block[tTop][tLeft];
+        //         }
+        //     }
+        // }
+
+        // const newScreen = screen.map(row => ({ pixels: row.pixels.map(p => p) }));
+        // for(let sTop = 0; sTop < BOARD_HEIGHT; sTop++) {
+        //     for(let sLeft = 0; sLeft < BOARD_WIDTH; sLeft++) {
+        //         const ty = sTop - theTile.top;
+        //         const tx = sLeft - theTile.left;
+        //         const tpixel = theTile.block[ty]?.[tx];
+        //         newScreen[sTop].pixels[sLeft] = tpixel && tpixel.type !== PixelType.EMPTY ? tpixel : screen[sTop].pixels[sLeft];
+        //     }
+        // }
+        // return newScreen;
+    }
+
+    const pausePerks = () => {
+        screen && screen.forEach((row) => row.pixels.forEach((pixel) => {
+            if(pixel.perk) {
+                pixel.perk.setPaused(gameState.isPaused);
+            }
+        }));
     }
 
     const reset = () => {
@@ -315,6 +302,7 @@ const createTetrisBoard = (): TetrisBoard => {
     const pause = (isPaused: boolean = true) => {
         gameState.isPaused = isPaused;
         setGameState(gameState);
+        pausePerks();
     };
 
     const start = () => {
@@ -331,7 +319,7 @@ const createTetrisBoard = (): TetrisBoard => {
     const addScore = (value: number): void => {
         gameState.score += value;
         gameState.score = TilesUtils.roundPoints(gameState.score);
-        maybeIncreaseLevel();
+        gameMode().mode === EGameMode.CLASSIC && maybeIncreaseLevel();
         setGameState(gameState);
     }
 
@@ -344,6 +332,22 @@ const createTetrisBoard = (): TetrisBoard => {
             clearInterval(gameState.gameInterval);
             gameState.gameInterval = window.setInterval(mainLoop, GAME_TICK);
         }
+    }
+
+    const drawPerkOnScreen = (screen: TScreen): TScreen => {
+        const takenPixels = ScreenUtils.getTakenPixelsCount(screen);
+        const drawnPerkPixelIndex = MiscUtils.getRandom(0, takenPixels - 1, 0);
+        if(takenPixels === 0 || drawnPerkPixelIndex < 0) {
+            return screen;
+        }
+        // mutate the pixel to update in render <for each/>
+        // doh! can't assign to reduced array
+        const newRandomPerk = PerkFactory.getRandomPerk();
+        ScreenUtils.getTakenPixels(screen)[drawnPerkPixelIndex].perk = newRandomPerk;
+        return screen.map((row) => {
+            row.pixels = row.pixels.map((pixel) => pixel.perk === newRandomPerk ? {...pixel} : pixel);
+            return row;
+        });
     }
 
     const changeDifficulty = (newDifficulty: Difficulty) => {
@@ -371,10 +375,13 @@ const createTetrisBoard = (): TetrisBoard => {
         reset,
         pause,
         start,
+        doGameOver,
         gameState: getGameState,
         bindControlKey,
         setBoardConfig,
         boardConfig,
+        setGameMode,
+        gameMode,
         difficulty,
         getSaveGame,
         useSavedGame

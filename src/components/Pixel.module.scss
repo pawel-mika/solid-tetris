@@ -4,6 +4,10 @@
     min-height: 3vh;
     font-size: 1vh;
     align-content: center;
+    display: grid;
+    grid-template: 1fr / 1fr;
+    place-items: center;
+    // transform-style: preserve-3d;
 
     &.p0 {
         background-color: transparent;
@@ -17,6 +21,71 @@
         background-color: rgb(131, 18, 74);
         animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
     }
+
+    .perk {
+        grid-column: 1 / 1;
+        grid-row: 1 / 1;
+        width: 100%;
+        height: 100%;
+        background-size: 100%;
+        mix-blend-mode: hard-light;
+        animation: perk-in forwards 1s cubic-bezier(0, .75, .5, 1);
+
+        &.perk-timeout {
+            --angle: 0deg;
+            background: conic-gradient(from var(--angle), transparent 50%, #efefefef 100%);
+            animation: rotate-conic-angle forwards 1s linear;
+        }
+
+        &.perk-paused {
+            animation-play-state: paused;
+        }
+
+        &.point-multiplier {
+            background-image: url('/src/assets/multiply.svg');
+        }
+
+        &.remove-row-above {
+            background-image: url('/src/assets/above.svg');
+        }
+
+        &.remove-row-below {
+            background-image: url('/src/assets/below.svg');
+        }
+
+        &.remove-even-rows {
+            background-image: url('/src/assets/even.svg');
+        }
+
+        &.clear-board {
+            background-image: url('/src/assets/clear.svg');
+        }
+
+        &.perk-overlay {
+            &:before {
+                content: "";
+                display: inline-block;
+                height: 100%;
+                vertical-align: middle;
+            }
+
+            mix-blend-mode: exclusion;
+            font-size: 1.75vh;
+            text-shadow: 0.15vh 0.15vh 0.15vh black;
+        }
+    }
+}
+
+@keyframes rotate-conic-angle {
+    to {
+        --angle: 360deg;
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
 }
 
 @keyframes points-out {
@@ -57,5 +126,29 @@
     100% {
         transform: scale(4) translateX(-2vw);
         filter: opacity(0) blur(2vh);
+    }
+}
+
+// @keyframes pixels-out-3 {
+//     0% {
+//         transform: scale(1) rotatex(0);
+//         filter: opacity(1) blur(0);
+//     }
+
+//     100% {
+//         transform: scale(4) translateX(2vw);
+//         filter: opacity(0) blur(2vh);
+//     }
+// }
+
+@keyframes perk-in {
+    0% {
+        transform: scale(4) translateX(2vw);
+        filter: opacity(0) blur(2vh);
+    }
+
+    100% {
+        transform: scale(1) rotatex(0);
+        filter: opacity(1) blur(0);
     }
 }

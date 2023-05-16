@@ -1,0 +1,8 @@
+<svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
+   <g id="border">
+      <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_10" y2="50" x2="550" y1="50" x1="50" stroke-width="20" stroke="#fff" fill="none"/>
+      <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_11" y2="550" x2="550" y1="50" x1="550" stroke-width="20" stroke="#fff" fill="none"/>
+      <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_12" y2="550" x2="50" y1="550" x1="550" stroke-width="20" stroke="#fff" fill="none"/>
+      <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_13" y2="50" x2="50" y1="550" x1="50" stroke-width="20" stroke="#fff" fill="none"/>
+   </g>
+</svg>

@@ -1,12 +1,28 @@
+import { createSignal } from 'solid-js';
+import { PerkType } from '../model/Perk';
+import { Pixel, PixelType } from "../model/Pixel";
+import { Row } from '../model/Row';
+import { TScreen } from '../model/Screen';
+import { TBlock, Tile } from '../model/Tile';
 import BlockFactory from "./BlockFactory";
-import { Pixel, PixelType, Row, TBlock, Tile, TScreen } from "./TetrisBoard";
+import PerkFactory from './PerkFactory';
+import ScreenUtils from './ScreenUtils';
 
 class TilesUtils {
     private static instance: TilesUtils;
+    
+    private static createNewInstance(): TilesUtils {
+        this.instance = new TilesUtils();
+        return this.instance;
+    }
+
+    public static getInstance(): TilesUtils {
+        return this.instance ? this.instance : this.createNewInstance();
+    }
 
     public convertBlock = (block: Array<Array<number>>): TBlock =>
         block.map((valArray) => valArray.map(val => val === 1
-            ? { type: PixelType.TAKEN } : { type: PixelType.EMPTY }));
+            ? ScreenUtils.createPixel(PixelType.TAKEN) : ScreenUtils.createPixel(PixelType.EMPTY)));
 
     public getRandomByte = () => Math.floor(Math.random() * 255).toString(16).padStart(2,'0');
     public getRandomColor = () => `#${this.getRandomByte()}${this.getRandomByte()}${this.getRandomByte()}`.substring(0, 7);
@@ -63,20 +79,10 @@ class TilesUtils {
     }
 
     public getNonEmptyPixelsLenght = (tile: Tile): number => {
-        // return tile.block.reduce((acc, rows) => acc + rows.filter((pixel) => pixel.type !== PixelType.EMPTY).length, 0);
         return this.getNonEmptyPixels(tile).length;
     }
 
     public roundPoints = (value: number) => Math.round(value * 100) / 100;
-
-    private static createNewInstance(): TilesUtils {
-        this.instance = new TilesUtils();
-        return this.instance;
-    }
-
-    public static getInstance(): TilesUtils {
-        return this.instance ? this.instance : this.createNewInstance();
-    }
 }
 
 export default TilesUtils.getInstance();
