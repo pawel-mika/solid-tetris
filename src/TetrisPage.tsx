@@ -1,13 +1,15 @@
-import { Component, createEffect, createRenderEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { Component, createEffect, createRenderEffect, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import AnimableElement from './components/AnimableElement';
 import GameStateOverlay from './components/GameState';
-import PixelComponent from './components/Pixel';
-import Settings, { KeyBinding } from "./Settings";
-import createTetrisBoard, { Pixel } from "./TetrisBoard";
-import styles from './TetrisPage.module.scss';
-import TilesUtils from './TilesUtils';
-import { SaveGame, useCreateSave, useHasSavedGame, useLoadSavedGame } from './hooks/saveGame';
 import LoadGameModal from './components/LoadGameModal';
+import PixelComponent from './components/Pixel';
+import createTetrisBoard from './game/TetrisBoard';
+import { SaveGame, useCreateSave, useHasSavedGame } from './hooks/saveGame';
+import { Pixel } from './model/Pixel';
+import { KeyBinding } from './model/Settings';
+import styles from './TetrisPage.module.scss';
+import Settings from './utils/Settings';
+import TilesUtils from './utils/TilesUtils';
 
 declare const __APP_VERSION__: string;
 declare const __COMMIT_HASH__: string;
@@ -15,6 +17,7 @@ declare const __BUILD_DATE__: string;
 
 declare type ScoreDiff = {
   score: number;
+  message?: string;
 }
 
 const TetrisPage: Component = () => {
@@ -25,11 +28,14 @@ const TetrisPage: Component = () => {
     onKeyDown,
     pause,
     reset,
+    doGameOver,
     gameState,
     bindControlKey,
     nextTile,
     boardConfig,
     setBoardConfig,
+    gameMode,
+    setGameMode,
     difficulty,
     getSaveGame,
     useSavedGame
@@ -66,6 +72,10 @@ const TetrisPage: Component = () => {
     reset();
   }
 
+  const giveUp = () => {
+    doGameOver();
+  }
+
   const bindKey = (binding: string) => {
     bindControlKey(binding);
   }
@@ -75,6 +85,14 @@ const TetrisPage: Component = () => {
     const config = Settings.getBoardConfigByName(configName);
     setBoardConfig(config);
     Settings.saveBoardConfig(config);
+    e.currentTarget.blur();
+  }
+
+  const changeGameMode = (e: InputEvent & { currentTarget: HTMLSelectElement; target: Element; }) => {
+    const modeName = e.currentTarget.value;
+    const gameMode = Settings.getGameModeByName(modeName);
+    setGameMode(gameMode);
+    Settings.saveGameMode(gameMode);
     e.currentTarget.blur();
   }
 
@@ -113,18 +131,24 @@ const TetrisPage: Component = () => {
   const onGameLoaded = (save: SaveGame) => {
     useSavedGame(save);
   }
-
-  // const renderScreen = () => screen().map((row) => row.pixels.map((pixel) => (<PixelComponent pixel={pixel} difficulty={difficulty()} />)));
+  
   // speed up rendering a little?
-  const renderScreen = () => <For each={screen().reduce((pixels, currentRow) => { pixels.push(...currentRow.pixels); return pixels; }, new Array<Pixel>())}>
+  const renderScreen = () => <For each={screen().reduce((pixels, currentRow) => pixels.concat(currentRow.pixels), new Array<Pixel>())}>
     {(pixel, pindex) => <PixelComponent pixel={pixel} difficulty={difficulty()} />}
-  </For >
-
+  </For>
+  
   return (
     <div class={styles.App}>
       <header class={styles.header}>
+        Game mode:
+        <select value={gameMode().name} onInput={e => changeGameMode(e)} disabled={!gameState().isGameOver}>
+          <For each={Settings.getGameModes()}>{
+            config => <option value={config.name}>{config.name}</option>
+          }</For>
+        </select>
+
         Board size:
-        <select value={boardConfig().name} onInput={e => changeBoardSize(e)}>
+        <select value={boardConfig().name} onInput={e => changeBoardSize(e)} disabled={!gameState().isGameOver}>
           <For each={Settings.getBoardConfigs()}>{
             config => <option value={config.name}>{config.name}</option>
           }</For>
@@ -151,11 +175,14 @@ const TetrisPage: Component = () => {
           <Show when={gameState().isGameOver}>
             <button onclick={newGame}>New Game</button>
           </Show>
+          <Show when={!gameState().isGameOver}>
+            <button onclick={giveUp}>Give Up</button>
+          </Show>
         </div>
 
         <For each={scoreDiff()}>
           {(item, index) =>
-            <AnimableElement onAnimEnd={() => removeScoreDiff(index())} animInClass={styles.score}>{item.score}</AnimableElement>}
+            <AnimableElement onAnimEnd={() => removeScoreDiff(index())} animInClass={styles.score}>{item.score}<Show when={item.message}><br/>{item.message}</Show></AnimableElement>}
         </For>
 
         <div class={styles.tetris} style={{

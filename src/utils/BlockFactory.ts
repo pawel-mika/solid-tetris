@@ -35,14 +35,17 @@ class BlockFactory {
         //     [0, 1, 1, 1],
         //     [1, 0, 0, 0]
         // ],
-        // debug block
+        // debug blocks
         //  [
         //     [1, 1, 1, 1, 1],
+        //     [1, 1, 1, 1, 1]
+        // ],
+        // [
         //     [1, 1, 1, 1, 1]
         // ]
     )
 
-    public getRandomBlock() {
+    public getRandomBlock(): Array<Array<number>> {
         const idx = Math.floor(Math.random() * this.blocks.length);
         return this.blocks[idx];
     }

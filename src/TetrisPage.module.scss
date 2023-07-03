@@ -105,7 +105,8 @@
     align-content: center;
     color: #ffffff;
     text-shadow: 6px 6px 8px rgb(0 0 0);
-    animation: big-label-in forwards 1s cubic-bezier(0.5, 0, 0, 1.25);
+    // animation: big-label-in forwards 0.75s cubic-bezier(0.5, 0, 0, 1.25);
+    animation: big-label-in forwards 0.75s linear;
     transform-style: preserve-3d;
 
     @keyframes big-label-in {

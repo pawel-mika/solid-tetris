@@ -1,0 +1,852 @@
+{
+    "currentTile": {
+        "block": [
+            [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#c9d634"
+                    }
+                },
+                {
+                    "type": 0,
+                    "style": {
+                        "background-color": "#c9d634"
+                    }
+                }
+            ],
+            [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#c9d634"
+                    }
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#c9d634"
+                    }
+                }
+            ],
+            [
+                {
+                    "type": 0,
+                    "style": {
+                        "background-color": "#c9d634"
+                    }
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#c9d634"
+                    }
+                }
+            ]
+        ],
+        "top": 3,
+        "left": 2,
+        "width": 2,
+        "height": 3
+    },
+    "gameState": {
+        "gameInterval": 43,
+        "isPaused": true,
+        "isGameOver": false,
+        "score": 548,
+        "difficulty": {
+            "name": "Easy",
+            "gameTick": 1000
+        }
+    },
+    "screen": [
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#8cc46f"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#8cc46f"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#8cc46f"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#8cc46f"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#7acda4"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#7acda4"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#7acda4"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#7acda4"
+                    },
+                    "points": 1,
+                    "perk": {
+                        "perkType": "point-multiplier",
+                        "timeActive": 69.7,
+                        "multiplier": 1.7,
+                        "style": {
+                            "animation-duration": "69.7s"
+                        }
+                    }
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#b7bf63"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#b7bf63"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#b7bf63"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ffae8"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ffae8"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#b7bf63"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ffae8"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ffae8"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#72a059"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ef0ad"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#72a059"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#72a059"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        },
+        {
+            "pixels": [
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ef0ad"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ef0ad"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#5ef0ad"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#72a059"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 1,
+                    "style": {
+                        "background-color": "#ead683"
+                    },
+                    "points": 1
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                },
+                {
+                    "type": 0
+                }
+            ]
+        }
+    ]
+}

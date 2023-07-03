@@ -1,5 +1,5 @@
 import { Accessor, Component, createEffect, createSignal } from 'solid-js';
-import { GameState } from '../TetrisBoard';
+import { GameState } from '../game/TetrisBoard';
 
 import styles from './GameState.module.scss';
 import Modal from './Modal';
