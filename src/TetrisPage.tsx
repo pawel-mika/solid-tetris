@@ -10,6 +10,8 @@ import { KeyBinding } from './model/Settings';
 import styles from './TetrisPage.module.scss';
 import Settings from './utils/Settings';
 import TilesUtils from './utils/TilesUtils';
+import ArcadeLegend from './components/ArcadeLegend';
+import { EGameMode } from './model/GameState';
 
 declare const __APP_VERSION__: string;
 declare const __COMMIT_HASH__: string;
@@ -177,6 +179,9 @@ const TetrisPage: Component = () => {
           </Show>
           <Show when={!gameState().isGameOver}>
             <button onclick={giveUp}>Give Up</button>
+          </Show>
+          <Show when={gameMode().mode === EGameMode.ARCADE}>
+            <ArcadeLegend></ArcadeLegend>
           </Show>
         </div>
 

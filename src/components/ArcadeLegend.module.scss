@@ -1,0 +1,13 @@
+.legend {
+    margin: 2vh;
+
+    .legendItem {
+        display: grid;
+        grid-template-columns: min-content max-content;
+        grid-template-rows: 1fr;
+        gap: 0px 0px;
+        grid-template-areas: ". .";
+        justify-items: center;
+        align-items: center;
+    }
+}

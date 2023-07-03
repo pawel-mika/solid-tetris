@@ -52,7 +52,7 @@ class ScreenUtils {
     }
 
     private markLineToRemove(row: Row, idx: number): void {
-        console.log(`Marking line to remove:`, idx)
+        // console.log(`Marking line to remove:`, idx)
         row.pixels = row.pixels.map((pixel) => pixel.type === PixelType.TAKEN ? ({...pixel, type: PixelType.REMOVING}) : pixel);
     }
 
