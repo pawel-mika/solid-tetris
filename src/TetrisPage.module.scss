@@ -77,9 +77,20 @@
     animation: gradient 15s ease infinite;
 }
 
-.help,
+.help {
+    font-size: 3vh;
+}
+
 .info {
     font-size: 3vh;
+    display: grid;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content min-content min-content 0.5fr min-content 1fr;
+    gap: 0px 0px;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
 
     button {
         margin-top: 1em;
