@@ -155,11 +155,12 @@ const TetrisPage: Component = () => {
             config => <option value={config.name}>{config.name}</option>
           }</For>
         </select>
-        <span class={styles.smallText}><b>Warning!</b><br/>Changing board size will reset the board!</span>
-        Level:
-        <span><b>{difficulty().name}</b></span>
-        <span class={styles.smallText}>(speed: {difficulty().gameTick}ms/drop)</span>
-        <span class={styles.smallText}>Advance every 5000 pts</span>
+        <Show when={gameMode().mode === EGameMode.CLASSIC}>
+          Level:
+          <span><b>{difficulty().name}</b></span>
+          <span class={styles.smallText}>(speed: {difficulty().gameTick}ms/drop)</span>
+          <span class={styles.smallText}>Advance every 5000 pts</span>
+        </Show>
       </header>
 
       <div class={styles.content}>
