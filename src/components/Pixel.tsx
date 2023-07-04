@@ -1,4 +1,4 @@
-import { Component, Show, createEffect, createMemo, createSignal, mergeProps, onCleanup, onMount } from 'solid-js';
+import { Component, Show, createEffect, createMemo, createRenderEffect, createSignal, mergeProps, onCleanup, onMount } from 'solid-js';
 import { createTimer } from '../hooks/timer';
 import { Perk, PerkType } from '../model/Perk';
 import { Pixel, PixelType } from '../model/Pixel';
@@ -34,7 +34,7 @@ const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (pro
         return pixel;
     }
 
-    createEffect(() => {
+    createRenderEffect(() => {
         if (props.pixel.perk) {
             props = mergeProps({pixel: setPerkTimeoutAnimation(props.pixel)}, props);
         }

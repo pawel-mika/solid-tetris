@@ -21,14 +21,12 @@ export const createTimer = (callback: () => void, time: number, shouldPause: Acc
   const pause = () => {
     cancel();
     remainingTime = remainingTime - (new Date().getTime() - startedAt);
-    // console.log(`paused at`, remainingTime);
     isPaused = true;
   };
 
   const resume = () => {
     timer = setTimeout(callback, remainingTime);
     startedAt = new Date().getTime();
-    // console.log(`resumed at`, remainingTime);
     isPaused = false;
   };
 
