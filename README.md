@@ -40,6 +40,18 @@ window with question whether you want to load it.
 Save will be only created if
 another is not present already or if the game is in progress (not in game over state).
 
+### Game modes
+
+Now we have something completely new - game modes!
+
+* Classic - you play as you did since begining - every 5000pts, game speeds up;
+* Endless - you can play without any speed ups, with the constant drop speed, (almost) endless;
+* Arcade - while playing in endless mode, there will be some perks drawn on each full lines you've cleared.
+
+## Example video of a new arcade mode
+
+![Video](./docs/assets/SolidTetrisArcade.mp4)
+
 ## Example WIP Screen
 
 ![Screen](./docs/assets/game_screen_1.png)
