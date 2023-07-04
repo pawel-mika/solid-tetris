@@ -1,11 +1,8 @@
-import { createSignal } from 'solid-js';
-import { PerkType } from '../model/Perk';
 import { Pixel, PixelType } from "../model/Pixel";
 import { Row } from '../model/Row';
 import { TScreen } from '../model/Screen';
 import { TBlock, Tile } from '../model/Tile';
 import BlockFactory from "./BlockFactory";
-import PerkFactory from './PerkFactory';
 import ScreenUtils from './ScreenUtils';
 
 class TilesUtils {
