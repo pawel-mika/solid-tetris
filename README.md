@@ -50,7 +50,7 @@ Now we have something completely new - game modes!
 
 ## Example video of a new arcade mode
 
-![Video](./docs/assets/SolidTetrisArcade.mp4)
+https://github.com/pawel-mika/solid-tetris/assets/1396931/cc8d4b76-715c-40e1-bd5c-e81198da1247
 
 ## Example WIP Screen
 
