@@ -105,7 +105,7 @@ class Settings {
   }
 
   public loadGameMode(): GameMode {
-    return JSON.parse(sessionStorage.getItem('settings.gameMode') || 'null') || this.gameModes[0];
+    return JSON.parse(sessionStorage.getItem('settings.gameMode') || 'null') || this.gameModes[2];
   }
 
   public saveGameMode(gameMode: GameMode): void {
