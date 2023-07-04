@@ -1,22 +1,22 @@
 import { createSignal } from 'solid-js';
-import { Perk, PerkType } from '../model/Perk';
+import { Perk, PerkProbabilityWeight, PerkType } from '../model/Perk';
 import MiscUtils from './MiscUtils';
 
 class PerkFactory {
     private static instance: PerkFactory;
 
     // array of arrays of perks and their probability of being drawn
-    private perksProbabilityWeigth: Array<[PerkType, number]> = [
-        [PerkType.POINT_MULTIPLIER, 30],
-        [PerkType.REMOVE_ROW_ABOVE, 31],
-        [PerkType.REMOVE_ROW_BELOW, 31],
-        [PerkType.REMOVE_EVEN_ROWS, 6],
-        [PerkType.CLEAR_BOARD, 2]
+    private perkProbabilityWeights: Array<PerkProbabilityWeight> = [
+        { perkType: PerkType.POINT_MULTIPLIER, probability: 30 },
+        { perkType: PerkType.REMOVE_ROW_ABOVE, probability: 31 },
+        { perkType: PerkType.REMOVE_ROW_BELOW, probability: 31 },
+        { perkType: PerkType.REMOVE_EVEN_ROWS, probability: 6 },
+        { perkType: PerkType.CLEAR_BOARD, probability: 2 }
     ];
 
     private getRandomPerkType(): PerkType {
-        const perksTable = this.perksProbabilityWeigth
-            .map((val) => Array(val[1]).fill(val[0]))
+        const perksTable = this.perkProbabilityWeights
+            .map(({probability, perkType}) => Array(probability).fill(perkType))
             .reduce((acc, val) => acc.concat(val), []);
         const randomIndex = MiscUtils.getRandom(0, perksTable.length - 1, 0);
         return perksTable[randomIndex];

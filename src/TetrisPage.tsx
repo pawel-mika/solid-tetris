@@ -133,12 +133,11 @@ const TetrisPage: Component = () => {
   const onGameLoaded = (save: SaveGame) => {
     useSavedGame(save);
   }
-  
-  // speed up rendering a little?
+
   const renderScreen = () => <For each={screen().reduce((pixels, currentRow) => pixels.concat(currentRow.pixels), new Array<Pixel>())}>
     {(pixel, pindex) => <PixelComponent pixel={pixel} difficulty={difficulty()} />}
   </For>
-  
+
   return (
     <div class={styles.App}>
       <header class={styles.header}>
