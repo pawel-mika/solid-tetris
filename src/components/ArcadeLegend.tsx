@@ -4,8 +4,9 @@ import { Pixel, PixelType } from '../model/Pixel';
 import PerkFactory from '../utils/PerkFactory';
 import ScreenUtils from '../utils/ScreenUtils';
 import Settings from '../utils/Settings';
-import PixelComponent from './Pixel';
+import TilesUtils from '../utils/TilesUtils';
 import styles from './ArcadeLegend.module.scss';
+import PixelComponent from './Pixel';
 
 interface LegendItem {
     perkPixel: Pixel;
@@ -17,7 +18,8 @@ const ArcadeLegend: Component = () => {
     const getLegendItem = (perkType: PerkType, description: string): LegendItem => ({
         perkPixel: {
             ...ScreenUtils.createPixel(PixelType.TAKEN),
-            perk: { ...PerkFactory.getRandomPerk(), perkType }
+            perk: { ...PerkFactory.getRandomPerk(), perkType },
+            style: { 'background-color': TilesUtils.getRandomColor() }
         },
         description
     });

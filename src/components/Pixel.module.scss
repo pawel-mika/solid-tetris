@@ -42,22 +42,27 @@
 
         &.point-multiplier {
             background-image: url('/src/assets/multiply.svg');
+            background-color: #0000004f;
         }
 
         &.remove-row-above {
             background-image: url('/src/assets/above.svg');
+            background-color: #0000004f;
         }
 
         &.remove-row-below {
             background-image: url('/src/assets/below.svg');
+            background-color: #0000004f;
         }
 
         &.remove-even-rows {
             background-image: url('/src/assets/even.svg');
+            background-color: #0000004f;
         }
 
         &.clear-board {
             background-image: url('/src/assets/clear.svg');
+            background-color: #0000004f;
         }
 
         &.perk-overlay {
@@ -68,7 +73,7 @@
                 vertical-align: middle;
             }
 
-            mix-blend-mode: exclusion;
+            mix-blend-mode: hard-light;
             font-size: 1.75vh;
             text-shadow: 0.15vh 0.15vh 0.15vh black;
         }

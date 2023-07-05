@@ -16,3 +16,8 @@ export interface Perk {
   setPaused: Setter<boolean>;
   style?: JSX.CSSProperties;
 }
+
+export interface PerkProbabilityWeight {
+  perkType: PerkType;
+  probability: number;
+}
