@@ -97,30 +97,30 @@ class Settings {
   }
 
   public loadBoardConfig(): BoardConfig {
-    return JSON.parse(sessionStorage.getItem('settings.boardConfig') || 'null') || this.boardConfigs[0];
+    return JSON.parse(localStorage.getItem('settings.boardConfig') || 'null') || this.boardConfigs[0];
   }
 
   public saveBoardConfig(boardConfig: BoardConfig): void {
-    sessionStorage.setItem('settings.boardConfig', JSON.stringify(boardConfig));
+    localStorage.setItem('settings.boardConfig', JSON.stringify(boardConfig));
   }
 
   public loadGameMode(): GameMode {
-    return JSON.parse(sessionStorage.getItem('settings.gameMode') || 'null') || this.gameModes[2];
+    return JSON.parse(localStorage.getItem('settings.gameMode') || 'null') || this.gameModes[2];
   }
 
   public saveGameMode(gameMode: GameMode): void {
-    sessionStorage.setItem('settings.gameMode', JSON.stringify(gameMode));
+    localStorage.setItem('settings.gameMode', JSON.stringify(gameMode));
   }
 
   private loadKeyBindings(): void {
     Object.getOwnPropertyNames(this.keyBinding).forEach((key: string) => {
-      this.keyBinding[key] = sessionStorage.getItem(`${this.keyBindingPrefix}${key}`) || this.keyBinding[key];
+      this.keyBinding[key] = localStorage.getItem(`${this.keyBindingPrefix}${key}`) || this.keyBinding[key];
     });
   }
 
   public saveKeyBindings(): void {
     Object.getOwnPropertyNames(this.keyBinding).forEach((key: string) => {
-      sessionStorage.setItem(`${this.keyBindingPrefix}${key}`, this.keyBinding[key]);
+      localStorage.setItem(`${this.keyBindingPrefix}${key}`, this.keyBinding[key]);
     });
   }
 
