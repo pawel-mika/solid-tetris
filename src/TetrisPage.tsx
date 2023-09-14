@@ -23,7 +23,7 @@ declare type ScoreDiff = {
 }
 
 const TetrisPage: Component = () => {
-  const getHiScore = () => sessionStorage.getItem('hiScore') || '0';
+  const getHiScore = () => localStorage.getItem('hiScore') || '0';
 
   const {
     screen,
@@ -105,10 +105,10 @@ const TetrisPage: Component = () => {
   });
 
   createEffect(() => {
-    const hiscore = Number.parseInt(sessionStorage.getItem('hiScore') || '0');
+    const hiscore = Number.parseInt(localStorage.getItem('hiScore') || '0');
     if (gameState().score > hiscore) {
-      sessionStorage.setItem('hiScore', `${gameState().score}`);
-      sessionStorage.setItem('hiScoreDate', `${new Date().getTime()}`);
+      localStorage.setItem('hiScore', `${gameState().score}`);
+      localStorage.setItem('hiScoreDate', `${new Date().getTime()}`);
       setHiScore(getHiScore());
     }
   });

@@ -15,15 +15,15 @@ export interface SaveGame {
 export const useHasSavedGame = (): boolean => useLoadSavedGame() !== null;
 
 export const useCreateSave = (save: SaveGame): void => {
-    sessionStorage.setItem(sessionSaveKey, JSON.stringify(save));
+    localStorage.setItem(sessionSaveKey, JSON.stringify(save));
 }
 
 export const useLoadSavedGame = (): SaveGame => {
-    return validateSave(JSON.parse(sessionStorage.getItem(sessionSaveKey) || 'null'));
+    return validateSave(JSON.parse(localStorage.getItem(sessionSaveKey) || 'null'));
 }
 
 export const useRemoveSavedGame = (): void => {
-    sessionStorage.removeItem(sessionSaveKey);
+    localStorage.removeItem(sessionSaveKey);
 }
 
 const validateSave = (save: SaveGame): SaveGame => {

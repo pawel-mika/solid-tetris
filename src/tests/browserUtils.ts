@@ -1,2 +1,2 @@
 const s = {}; // the save 
-sessionStorage.setItem('save', JSON.stringify(s))
+localStorage.setItem('save', JSON.stringify(s))
