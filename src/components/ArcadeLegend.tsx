@@ -1,4 +1,4 @@
-import { Component, For } from 'solid-js';
+import { Component, For, createEffect } from 'solid-js';
 import { PerkType } from '../model/Perk';
 import { Pixel, PixelType } from '../model/Pixel';
 import PerkFactory from '../utils/PerkFactory';
@@ -32,7 +32,9 @@ const ArcadeLegend: Component = () => {
         getLegendItem(PerkType.CLEAR_BOARD, 'Clear the whole board')
     ];
 
-    legend.forEach((li) => li.perkPixel.perk?.setPaused(true));
+    createEffect(() => {
+        legend.forEach((li) => li.perkPixel.perk?.setPaused(true));
+    })
 
     return (<div class={styles.legend}>Perks legend:
         <For each={legend}>{(li) =>

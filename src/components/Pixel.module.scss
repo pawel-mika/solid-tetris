@@ -18,6 +18,7 @@
     }
 
     &.p2 {
+        background-color: white;
         animation: pixels-out-1 forwards 1s cubic-bezier(0, .75, .5, 1);
     }
 
@@ -60,6 +61,11 @@
             background-color: #0000004f;
         }
 
+        &.gravity-cascade {
+            background-image: url('/src/assets/gravity-cascade.svg');
+            background-color: #0000004f;
+        }
+        
         &.clear-board {
             background-image: url('/src/assets/clear.svg');
             background-color: #0000004f;

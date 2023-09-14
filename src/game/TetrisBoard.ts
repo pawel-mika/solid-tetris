@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from 'solid-js';
+import { createEffect, createRenderEffect, createSignal } from 'solid-js';
 import { SaveGame } from '../hooks/saveGame';
 import { TetrisBoard } from '../model/Board';
 import { EGameMode, GameMode, GameState } from '../model/GameState';
@@ -97,13 +97,39 @@ const createTetrisBoard = (): TetrisBoard => {
                 break;
             case keyBinding.rotate.toLowerCase():
                 tile = rotateIfPossible(tile);
-                break
+                break;
             case keyBinding.pause.toLowerCase():
                 gameState.isPaused = !gameState.isPaused;
                 setGameState(gameState);
                 pausePerks();
             default:
                 break;
+        }
+        // some dev codes, add some 'dev mode' condition to if
+        if(e.altKey) {
+            switch(e.key.toLowerCase()) {
+                case '0':
+                    const perk = PerkFactory.getRandomPerk();
+                    ScreenUtils.getTakenPixels(screen)[0].perk = perk;
+                    screen = screen.map((row) => {
+                        row.pixels = row.pixels.map((pixel) => pixel.perk === perk ? {...pixel} : pixel);
+                        return row;
+                    });
+                    // screen = screen.map((row) => {
+                    //     const pixels = row.pixels.map((pixel) => {
+                    //         if(pixel.type !== PixelType.EMPTY) {
+                    //             pixel.perk = PerkFactory.getRandomPerk();
+                    //         }
+                    //         return pixel;
+                    //     });
+                    //     return {...row, pixels};
+                    // });
+                    break;
+                case '1':
+                    ScreenUtils.applyGravityCascade(screen);
+                default:
+                    break;
+            }
         }
         calculateDeltaTilePosition();
         setActualScreen(getActualScreen());

@@ -38,11 +38,15 @@ class ScreenUtils {
                     [PerkType.REMOVE_ROW_BELOW]: () => rowIndex < screen.length - 1 && this.markLineToRemove(screen[rowIndex + 1], rowIndex + 1),
                     [PerkType.REMOVE_EVEN_ROWS]: () => this.markEvenLinesToRemove(screen),
                     [PerkType.POINT_MULTIPLIER]: () => this.markLineToRemove(row, rowIndex),
+                    [PerkType.GRAVITY_CASCADE]: () => this.applyGravityCascade(screen),
                     [PerkType.CLEAR_BOARD]: () => this.markAllLinesToRemove(screen),
                   };
                 pixelsWithPerks.forEach((pixel) => {
                     if (pixel.perk?.perkType && pixel.perk?.perkType in perkActions) {
                         perkActions[pixel.perk?.perkType]();
+                        // if(pixel.perk?.perkType !== PerkType.GRAVITY_CASCADE) {
+                        //     this.markLineToRemove(row, rowIndex);
+                        // }
                     }
                 });
                 this.markLineToRemove(row, rowIndex);
@@ -66,6 +70,24 @@ class ScreenUtils {
     private markAllLinesToRemove(screen: TScreen): void {
         screen.forEach((row: Row, idx: number) => this.markLineToRemove(row, idx));
     }
+
+    // ignore a line we've already cleared and came with gravity cascade from!?
+    public applyGravityCascade(screen: TScreen): boolean {
+        let somethingDropped = false;
+        for (let row = screen.length - 1; row > 0; row--) {
+            const rowPixels = screen[row].pixels;
+            const abovePixels = screen[row - 1]?.pixels;
+            if(!abovePixels) { continue; };
+            for(let col = 0; col < rowPixels.length; col ++)  {
+                if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
+                    rowPixels[col] = abovePixels[col];
+                    abovePixels[col] = this.createPixel(PixelType.EMPTY);
+                    somethingDropped = true;
+                }
+            }
+          }
+          return somethingDropped ? this.applyGravityCascade(screen) : somethingDropped;
+      }
 }
 
 export default ScreenUtils.getInstance();

@@ -11,6 +11,7 @@ class PerkFactory {
         { perkType: PerkType.REMOVE_ROW_ABOVE, probability: 31 },
         { perkType: PerkType.REMOVE_ROW_BELOW, probability: 31 },
         { perkType: PerkType.REMOVE_EVEN_ROWS, probability: 6 },
+        { perkType: PerkType.GRAVITY_CASCADE, probability: 200 },
         { perkType: PerkType.CLEAR_BOARD, probability: 2 }
     ];
 

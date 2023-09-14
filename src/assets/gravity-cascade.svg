@@ -1,0 +1,19 @@
+<svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs></defs>
+  <g id="border">
+    <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_10" y2="50" x2="550" y1="50" x1="50" stroke-width="20" stroke="#fff" fill="none"></line>
+    <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_11" y2="550" x2="550" y1="50" x1="550" stroke-width="20" stroke="#fff" fill="none"></line>
+    <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_12" y2="550" x2="50" y1="550" x1="550" stroke-width="20" stroke="#fff" fill="none"></line>
+    <line stroke-linecap="round" stroke-linejoin="bevel" id="svg_13" y2="50" x2="50" y1="550" x1="50" stroke-width="20" stroke="#fff" fill="none"></line>
+  </g>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="100" y1="500" x2="500" y2="500"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="100" y1="450" x2="500" y2="450"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="100" y1="400" x2="200" y2="400"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="400" y1="400" x2="500" y2="400"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="400" y1="350" x2="500" y2="350"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="300" y1="300" x2="400" y2="300"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="345" y1="325" x2="355" y2="325"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="345" y1="350" x2="355" y2="350"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="345" y1="400" x2="355" y2="400"></line>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: bevel; stroke-width: 20px;" x1="345" y1="375" x2="355" y2="375"></line>
+</svg>
