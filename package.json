@@ -1,6 +1,6 @@
 {
   "name": "solid-tetris",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "scripts": {
     "predeploy": "npm run build",

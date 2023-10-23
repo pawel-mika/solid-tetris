@@ -1,11 +1,11 @@
-import { Component, Show, createEffect, createMemo, createRenderEffect, createSignal, mergeProps, onCleanup, onMount } from 'solid-js';
+import { Component, Show, createRenderEffect, createSignal, mergeProps } from 'solid-js';
 import { createTimer } from '../hooks/timer';
 import { Perk, PerkType } from '../model/Perk';
 import { Pixel, PixelType } from '../model/Pixel';
 import { Difficulty } from '../model/Settings';
 import styles from './Pixel.module.scss';
 
-// problem: whenever the pixel element node is reattached in the DOM node tree 
+// problem: whenever the pixel element node is reattached in the DOM node tree
 // the perk animation restarts... :( no idea yet how to solve...
 const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (props) => {
     const [perk, setPerk] = createSignal<Perk | null>(null);
