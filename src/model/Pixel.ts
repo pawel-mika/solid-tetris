@@ -12,5 +12,5 @@ export interface Pixel {
   style?: JSX.CSSProperties;
   points?: number;
   perk?: Perk;
-  id?: string;  // unique pixel id for better DOM rendering purposes
+  id?: string;  // unique pixel id for better DOM rendering purpose; solve unwanted node re-render
 }

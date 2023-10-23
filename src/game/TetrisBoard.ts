@@ -16,7 +16,7 @@ import TilesUtils from '../utils/TilesUtils';
 import { PerkType } from '../model/Perk';
 
 /**
- * 
+ *
  * @returns base tetris board implementation
  */
 const createTetrisBoard = (): TetrisBoard => {
@@ -114,6 +114,8 @@ const createTetrisBoard = (): TetrisBoard => {
             return;
         }
 
+        screen = clearMarkedLines(screen);
+
         // check for game over
         let deltaTile = { ...tile };
         deltaTile.top += 1;
@@ -122,8 +124,6 @@ const createTetrisBoard = (): TetrisBoard => {
             setActualScreen(getActualScreen());
             return;
         }
-
-        screen = clearMarkedLines(screen);
 
         tile.possibleTop = tile.top + 1;
 
@@ -320,8 +320,6 @@ const createTetrisBoard = (): TetrisBoard => {
         if(takenPixels === 0 || drawnPerkPixelIndex < 0) {
             return screen;
         }
-        // mutate the pixel to update in render <for each/>
-        // doh! can't assign to reduced array
         const newRandomPerk = PerkFactory.getRandomPerk();
         ScreenUtils.getTakenPixels(screen)[drawnPerkPixelIndex].perk = newRandomPerk;
         return screen.map((row) => {
