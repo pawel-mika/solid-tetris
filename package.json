@@ -1,6 +1,6 @@
 {
   "name": "solid-tetris",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "",
   "scripts": {
     "predeploy": "npm run build",
@@ -17,9 +17,9 @@
     "vite-plugin-solid": "^2.7.0"
   },
   "dependencies": {
-    "babel-preset-solid": "^1.7.4",
+    "babel-preset-solid": "^1.8.2",
     "node-sass": "^8.0.0",
     "sass": "^1.62.1",
-    "solid-js": "^1.7.5"
+    "solid-js": "^1.8.3"
   }
 }
