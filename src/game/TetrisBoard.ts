@@ -106,7 +106,7 @@ const createTetrisBoard = (): TetrisBoard => {
                 break;
         }
         // some dev codes, add some 'dev mode' condition to if
-        if(e.altKey) {
+        if(import.meta.env.DEV && e.altKey) {
             switch(e.key.toLowerCase()) {
                 case '0':
                     const perk = PerkFactory.getRandomPerk();
@@ -115,18 +115,9 @@ const createTetrisBoard = (): TetrisBoard => {
                         row.pixels = row.pixels.map((pixel) => pixel.perk === perk ? {...pixel} : pixel);
                         return row;
                     });
-                    // screen = screen.map((row) => {
-                    //     const pixels = row.pixels.map((pixel) => {
-                    //         if(pixel.type !== PixelType.EMPTY) {
-                    //             pixel.perk = PerkFactory.getRandomPerk();
-                    //         }
-                    //         return pixel;
-                    //     });
-                    //     return {...row, pixels};
-                    // });
                     break;
                 case '1':
-                    ScreenUtils.applyGravityCascade(screen);
+                    startGravityCascade();
                 default:
                     break;
             }
@@ -267,8 +258,6 @@ const createTetrisBoard = (): TetrisBoard => {
         return collision;
     }
 
-    // probably here mixing tile to screen causes perk animation to restart as pixel with perk might be mutated?
-    // actually scrolling down a tile through a line containing perk causes it to reset
     const mixinTileToScreen = (theTile: Tile, screen: TScreen): TScreen => {
         return screen.map(
             (row, rowIndex) => {
@@ -290,6 +279,22 @@ const createTetrisBoard = (): TetrisBoard => {
                 pixel.perk.setPaused(gameState.isPaused);
             }
         }));
+    }
+
+    // fix perks restart - maybe just clone them in the copy?
+    const startGravityCascade = () => {
+        const frames = ScreenUtils.prepareGravityCascadeAnim([screen]);
+        const tick = (GAME_TICK - 50 ) / (frames.length - 1);
+        const timer = setInterval(() => {
+            const frame = ScreenUtils.getGravityCascadeFrame(screen);
+            // ScreenUtils.logScreenPixels(frame as TScreen);
+            if(frame) {
+                screen = frame;
+                setActualScreen(getActualScreen());
+            } else {
+                clearInterval(timer);
+            }
+        }, tick);
     }
 
     const reset = () => {

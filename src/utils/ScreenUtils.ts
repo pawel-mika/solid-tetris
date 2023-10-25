@@ -88,6 +88,73 @@ class ScreenUtils {
           }
           return somethingDropped ? this.applyGravityCascade(screen) : somethingDropped;
       }
+
+      /**
+       * 
+       * @param initial screen/frame
+       * @returns screen a frame of cascade or null if no more frames (all pixels dropped to the lowest)
+       */
+      public getGravityCascadeFrame(screen: TScreen): TScreen | null {
+        let somethingDropped = false;
+        for (let row = screen.length - 1; row > 0; row--) {
+            const rowPixels = screen[row].pixels;
+            const abovePixels = screen[row - 1]?.pixels;
+            if(!abovePixels) { continue; };
+            for(let col = 0; col < rowPixels.length; col ++)  {
+                if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
+                    rowPixels[col] = abovePixels[col];
+                    abovePixels[col] = this.createPixel(PixelType.EMPTY);
+                    somethingDropped = true;
+                }
+            }
+          }
+          return somethingDropped ? screen : null;
+      }
+
+      /**
+       * @param framesStack an array of screen for anim with initial screen in 1 element
+       * @returns an array of frames to animate
+       */
+      public prepareGravityCascadeAnim(framesStack: Array<TScreen | null> = new Array<TScreen>): Array<TScreen | null> {
+        const screen = framesStack[framesStack.length - 1] as TScreen;
+        let somethingDropped = false;
+        if(screen === null) {
+            return framesStack;
+        }
+        for (let row = screen.length - 1; row > 0; row--) {
+            const rowPixels = screen[row].pixels;
+            const abovePixels = screen[row - 1]?.pixels;
+            if(!abovePixels) {
+                continue;
+            };
+            for(let col = 0; col < rowPixels.length; col ++)  {
+                if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
+                    rowPixels[col] = abovePixels[col];
+                    abovePixels[col] = this.createPixel(PixelType.EMPTY);
+                    somethingDropped = true;
+                }
+            }
+          }
+          return somethingDropped ? this.prepareGravityCascadeAnim([...framesStack, this.cloneScreen(screen, true)]) : [...framesStack, null];
+      }
+
+      // * THIS IS BAD because it causes every perk to be restarted (new object, new reference:()
+      public cloneScreen(screen: TScreen, copyPerks: boolean = false): TScreen {
+        const copyScreen: TScreen = new Array();
+        screen.forEach((row) => {
+            const copyRow = { pixels: new Array<Pixel>()};
+            row.pixels.forEach((pixel) => copyRow.pixels.push(copyPerks && pixel.perk ? pixel : {...pixel}));
+            copyScreen.push(copyRow);
+        });
+        return copyScreen;
+      }
+
+      public logScreen(screen:TScreen): void {
+        if(screen) {
+            const screenString = screen.map((row) => `${row.pixels.map(({ type }) => type === PixelType.TAKEN ? 'X' : '.').join('')}\r\n`);
+            console.log(screenString.join(''));
+        }
+      }
 }
 
 export default ScreenUtils.getInstance();

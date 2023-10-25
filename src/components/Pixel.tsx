@@ -1,5 +1,5 @@
-import { Component, Show, createEffect, createRenderEffect, createSignal, mergeProps } from 'solid-js';
-import { ITimer, createTimer } from '../hooks/timer';
+import { Component, Show, createRenderEffect, createSignal, mergeProps } from 'solid-js';
+import { createTimer } from '../hooks/timer';
 import { Perk, PerkType } from '../model/Perk';
 import { Pixel, PixelType } from '../model/Pixel';
 import { Difficulty } from '../model/Settings';
@@ -9,7 +9,6 @@ import styles from './Pixel.module.scss';
 // the perk animation restarts... :( no idea yet how to solve...
 const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (props) => {
     const [perk, setPerk] = createSignal<Perk | null>(null);
-    const [perkTimer, setTimer] = createSignal<ITimer>();
 
     const setRandomRemovingAnimation = (pixel: Pixel): Pixel => {
         const anims = [styles['pixels-out-1'], styles['pixels-out-2']];
@@ -24,37 +23,16 @@ const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (pro
         }
         setPerk(pixel.perk);
         pixel.perk.style = { ...pixel.perk.style, 'animation-duration': `${pixel.perk?.timeActive}s` };
-        // createTimer(() => {
-        //     console.log('## perk timed out, removing', pixel.perk);
-        //     pixel.perk = undefined;
-        //     setPerk(null);
-        // },
-        //     (pixel.perk?.timeActive || 0) * 1000,
-        //     pixel.perk?.isPaused);
-
-        setTimer(createTimer(() => {
+        createTimer(() => {
             console.log('## perk timed out, removing', pixel.perk);
             pixel.perk = undefined;
             setPerk(null);
-        }, (pixel.perk?.timeActive || 0) * 1000));
+        },
+            (pixel.perk?.timeActive || 0) * 1000,
+            pixel.perk?.isPaused);
 
         return pixel;
     }
-
-    createEffect(() => {
-        if(props.pixel.perk) {
-            props.pixel.perk.isPaused() ? perkTimer()?.pause() : perkTimer()?.resume();
-        }
-    });
-
-    // createEffect(() => {
-    //     if(props?.pixel?.perk?.isPaused() && !perkTimer()?.isPaused()) {
-    //         perkTimer()?.pause();
-    //     }
-    //     //  else if(!props?.pixel?.perk?.isPaused() && perkTimer()?.isPaused()){
-    //     //     perkTimer()?.resume();
-    //     // }
-    // })
 
     createRenderEffect(() => {
         if (props.pixel.perk) {

@@ -29,12 +29,13 @@ const ArcadeLegend: Component = () => {
         getLegendItem(PerkType.REMOVE_ROW_ABOVE, 'Remove one row above'),
         getLegendItem(PerkType.REMOVE_EVEN_ROWS, 'Remove even rows'),
         getLegendItem(PerkType.POINT_MULTIPLIER, 'Point multiplier per cleared rows'),
+        getLegendItem(PerkType.GRAVITY_CASCADE, 'Gravity cascade to empty spaces'),
         getLegendItem(PerkType.CLEAR_BOARD, 'Clear the whole board')
     ];
 
     createEffect(() => {
         legend.forEach((li) => li.perkPixel.perk?.setPaused(true));
-    })
+    });
 
     return (<div class={styles.legend}>Perks legend:
         <For each={legend}>{(li) =>
