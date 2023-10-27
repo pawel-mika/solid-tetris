@@ -1,7 +1,9 @@
+import { createEffect, createRenderEffect } from 'solid-js';
 import { PerkType } from '../model/Perk';
 import { Pixel, PixelType } from "../model/Pixel";
 import { Row } from '../model/Row';
 import { TScreen } from '../model/Screen';
+import BlockFactory from './BlockFactory';
 
 class ScreenUtils {
     private static instance: ScreenUtils;
@@ -38,15 +40,13 @@ class ScreenUtils {
                     [PerkType.REMOVE_ROW_BELOW]: () => rowIndex < screen.length - 1 && this.markLineToRemove(screen[rowIndex + 1], rowIndex + 1),
                     [PerkType.REMOVE_EVEN_ROWS]: () => this.markEvenLinesToRemove(screen),
                     [PerkType.POINT_MULTIPLIER]: () => this.markLineToRemove(row, rowIndex),
-                    [PerkType.GRAVITY_CASCADE]: () => this.applyGravityCascade(screen),
+                    // [PerkType.GRAVITY_CASCADE]: () => this.applyGravityCascade(screen),
+                    [PerkType.GRAVITY_CASCADE]: () => this.startGravityCascade(screen),
                     [PerkType.CLEAR_BOARD]: () => this.markAllLinesToRemove(screen),
                   };
                 pixelsWithPerks.forEach((pixel) => {
                     if (pixel.perk?.perkType && pixel.perk?.perkType in perkActions) {
                         perkActions[pixel.perk?.perkType]();
-                        // if(pixel.perk?.perkType !== PerkType.GRAVITY_CASCADE) {
-                        //     this.markLineToRemove(row, rowIndex);
-                        // }
                     }
                 });
                 this.markLineToRemove(row, rowIndex);
@@ -71,23 +71,71 @@ class ScreenUtils {
         screen.forEach((row: Row, idx: number) => this.markLineToRemove(row, idx));
     }
 
-    // ignore a line we've already cleared and came with gravity cascade from!?
-    public applyGravityCascade(screen: TScreen): boolean {
-        let somethingDropped = false;
-        for (let row = screen.length - 1; row > 0; row--) {
-            const rowPixels = screen[row].pixels;
-            const abovePixels = screen[row - 1]?.pixels;
-            if(!abovePixels) { continue; };
-            for(let col = 0; col < rowPixels.length; col ++)  {
-                if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
-                    rowPixels[col] = abovePixels[col];
-                    abovePixels[col] = this.createPixel(PixelType.EMPTY);
-                    somethingDropped = true;
-                }
+    public isRowEmpty(row: Row): boolean {
+        return row.pixels.every(({type}) => type === PixelType.EMPTY);
+    }
+
+    // // fix perks restart - maybe just clone them in the copy?
+    public startGravityCascade(screen: TScreen): void {
+        const maxDrop = this.calculateGravityCascadeMaxDrop(screen);
+        // const tick = (GAME_TICK - 50 ) / maxDrop;
+        const tick = (1000 - 50 ) / maxDrop;
+        const timer = setInterval(() => {
+            const frame = this.getGravityCascadeFrame(screen);
+            if(frame) {
+                // this.logScreen(frame);
+                screen = frame;
+                // setActualScreen(getActualScreen());
+            } else {
+                clearInterval(timer);
             }
-          }
-          return somethingDropped ? this.applyGravityCascade(screen) : somethingDropped;
-      }
+        }, tick);
+    }
+
+    /** 
+     * calculate how many px down we need to drop 
+     */
+    public calculateGravityCascadeMaxDrop(screen: TScreen): number {
+        const block = screen.reduceRight((acc, cRow) => {
+            !this.isRowEmpty(cRow) && acc.push(cRow.pixels);
+            return acc;
+        }, new Array<Array<Pixel>>());
+        const ccwBlock = BlockFactory.rotateBlockCCW<Pixel>(block);
+        return ccwBlock.reduce((acc, cRow) => {
+            let max = 0;
+            if(!this.isRowEmpty({pixels: cRow}))  {
+                cRow.forEach(({type}, idx) => {
+                    const isEmpty = type === 0;
+                    const someTakenTillEnd = !this.isRowEmpty({pixels: cRow.slice(idx)});
+                    if(isEmpty && someTakenTillEnd) {
+                        max++;
+                    }
+                });
+            }
+                
+            console.log(cRow.map(px => px.type === 1 ? 'X' : '.').join(''), max, acc);
+            return max > acc ? max : acc;
+        }, 0);
+    }
+
+    // // ignore a line we've already cleared and came with gravity cascade from!?
+    // public applyGravityCascade(screen: TScreen): boolean {
+    //     let somethingDropped = false;
+    //     console.log(`####`, this.calculateGravityCascadeMaxDrop(screen));
+    //     for (let row = screen.length - 1; row > 0; row--) {
+    //         const rowPixels = screen[row].pixels;
+    //         const abovePixels = screen[row - 1]?.pixels;
+    //         if(!abovePixels) { continue; };
+    //         for(let col = 0; col < rowPixels.length; col ++)  {
+    //             if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
+    //                 rowPixels[col] = abovePixels[col];
+    //                 abovePixels[col] = this.createPixel(PixelType.EMPTY);
+    //                 somethingDropped = true;
+    //             }
+    //         }
+    //       }
+    //       return somethingDropped ? this.applyGravityCascade(screen) : somethingDropped;
+    //   }
 
       /**
        * 
@@ -111,34 +159,8 @@ class ScreenUtils {
           return somethingDropped ? screen : null;
       }
 
-      /**
-       * @param framesStack an array of screen for anim with initial screen in 1 element
-       * @returns an array of frames to animate
-       */
-      public prepareGravityCascadeAnim(framesStack: Array<TScreen | null> = new Array<TScreen>): Array<TScreen | null> {
-        const screen = framesStack[framesStack.length - 1] as TScreen;
-        let somethingDropped = false;
-        if(screen === null) {
-            return framesStack;
-        }
-        for (let row = screen.length - 1; row > 0; row--) {
-            const rowPixels = screen[row].pixels;
-            const abovePixels = screen[row - 1]?.pixels;
-            if(!abovePixels) {
-                continue;
-            };
-            for(let col = 0; col < rowPixels.length; col ++)  {
-                if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
-                    rowPixels[col] = abovePixels[col];
-                    abovePixels[col] = this.createPixel(PixelType.EMPTY);
-                    somethingDropped = true;
-                }
-            }
-          }
-          return somethingDropped ? this.prepareGravityCascadeAnim([...framesStack, this.cloneScreen(screen, true)]) : [...framesStack, null];
-      }
-
-      // * THIS IS BAD because it causes every perk to be restarted (new object, new reference:()
+      // WARNING! it causes every perk to be restarted (new object, new reference:()
+      // using this and setting it's result as actual screen will cause every perk to restart!
       public cloneScreen(screen: TScreen, copyPerks: boolean = false): TScreen {
         const copyScreen: TScreen = new Array();
         screen.forEach((row) => {
@@ -155,6 +177,8 @@ class ScreenUtils {
             console.log(screenString.join(''));
         }
       }
+
+
 }
 
 export default ScreenUtils.getInstance();

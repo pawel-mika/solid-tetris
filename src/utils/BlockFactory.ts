@@ -54,20 +54,20 @@ class BlockFactory {
         return block.reduce((p, c) => p > c.length ? p : c.length, 0);
     }
 
-    public rotateBlockCW(block: Array<Array<unknown>>) {
+    public rotateBlockCW<T>(block: Array<Array<T>>) {
         const newHeight = this.getBlockWidth(block);
         const newWidth = block.length;
         return Array(newHeight).fill([]).map(
             (ry, iy) => Array(newWidth).fill([]).map(
-                (rx, ix) => block[ix][iy]).reverse().map(x => x ? x : 0));
+                (rx, ix) => block[ix][iy]).reverse().map(x => x ? x : 0)) as Array<Array<T>>;
     }
 
-    public rotateBlockCCW(block: Array<Array<unknown>>) {
+    public rotateBlockCCW<T>(block: Array<Array<T>>) {
         const newHeight = this.getBlockWidth(block);
         const newWidth = block.length;
         return Array(newHeight).fill([]).map(
             (ry, iy) => Array(newWidth).fill([]).map(
-                (rx, ix) => block[ix][iy]).map(x => x ? x : 0)).reverse();
+                (rx, ix) => block[ix][iy]).map(x => x ? x : 0)).reverse() as Array<Array<T>>;
     }
 
     private static createNewInstance(): BlockFactory {

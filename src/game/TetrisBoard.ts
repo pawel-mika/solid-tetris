@@ -105,7 +105,7 @@ const createTetrisBoard = (): TetrisBoard => {
             default:
                 break;
         }
-        // some dev codes, add some 'dev mode' condition to if
+        // some dev codes, add 'dev mode' condition to if
         if(import.meta.env.DEV && e.altKey) {
             switch(e.key.toLowerCase()) {
                 case '0':
@@ -117,7 +117,10 @@ const createTetrisBoard = (): TetrisBoard => {
                     });
                     break;
                 case '1':
-                    startGravityCascade();
+                    // startGravityCascade();
+                    // ScreenUtils.applyGravityCascade(screen);
+                    ScreenUtils.startGravityCascade(screen);
+                    console.log(ScreenUtils.calculateGravityCascadeMaxDrop(screen));
                 default:
                     break;
             }
@@ -283,8 +286,8 @@ const createTetrisBoard = (): TetrisBoard => {
 
     // fix perks restart - maybe just clone them in the copy?
     const startGravityCascade = () => {
-        const frames = ScreenUtils.prepareGravityCascadeAnim([screen]);
-        const tick = (GAME_TICK - 50 ) / (frames.length - 1);
+        const frames = ScreenUtils.calculateGravityCascadeMaxDrop(screen);
+        const tick = (GAME_TICK - 50 ) / frames;
         const timer = setInterval(() => {
             const frame = ScreenUtils.getGravityCascadeFrame(screen);
             // ScreenUtils.logScreenPixels(frame as TScreen);

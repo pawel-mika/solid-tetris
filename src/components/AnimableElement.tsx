@@ -25,7 +25,6 @@ const AnimableElement: ParentComponent<ParentProps & AnimableProps> = (props) =>
     const merged = mergeProps({onAnimStart: () => {}, onAnimEnd: () => {}}, props);
 
     const fireSignal = (type: SignalType, e: AnimableEvent) => {
-        console.log(type, e);
         const animName = e.animationName;
 
         // TODO - BAD - fix it
