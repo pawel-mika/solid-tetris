@@ -290,7 +290,6 @@ const createTetrisBoard = (): TetrisBoard => {
         const tick = (GAME_TICK - 50 ) / frames;
         const timer = setInterval(() => {
             const frame = ScreenUtils.getGravityCascadeFrame(screen);
-            // ScreenUtils.logScreenPixels(frame as TScreen);
             if(frame) {
                 screen = frame;
                 setActualScreen(getActualScreen());
