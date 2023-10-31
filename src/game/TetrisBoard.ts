@@ -117,10 +117,8 @@ const createTetrisBoard = (): TetrisBoard => {
                     });
                     break;
                 case '1':
-                    // startGravityCascade();
-                    // ScreenUtils.applyGravityCascade(screen);
-                    ScreenUtils.startGravityCascade(screen);
                     console.log(ScreenUtils.calculateGravityCascadeMaxDrop(screen));
+                    startGravityCascade();
                 default:
                     break;
             }
@@ -129,6 +127,10 @@ const createTetrisBoard = (): TetrisBoard => {
         setActualScreen(getActualScreen());
     }
 
+    /**
+     * Main game loop
+     * @returns 
+     */
     const mainLoop = () => {
         if (gameState.isPaused || gameState.isGameOver) {
             return;
@@ -162,6 +164,13 @@ const createTetrisBoard = (): TetrisBoard => {
         calculateScorePerPixel();
         calculateDeltaTilePosition();
         setActualScreen(getActualScreen());
+
+        const fullLines = TilesUtils.getFullLines(screen);
+        const hasCascade = fullLines.length && ScreenUtils.hasPerkType(fullLines, PerkType.GRAVITY_CASCADE);
+        if(hasCascade) { // something wrong here
+            screen = clearMarkedLines(screen);
+            startGravityCascade();
+        }
     }
 
     const calculateDeltaTilePosition = () => {

@@ -40,8 +40,7 @@ class ScreenUtils {
                     [PerkType.REMOVE_ROW_BELOW]: () => rowIndex < screen.length - 1 && this.markLineToRemove(screen[rowIndex + 1], rowIndex + 1),
                     [PerkType.REMOVE_EVEN_ROWS]: () => this.markEvenLinesToRemove(screen),
                     [PerkType.POINT_MULTIPLIER]: () => this.markLineToRemove(row, rowIndex),
-                    // [PerkType.GRAVITY_CASCADE]: () => this.applyGravityCascade(screen),
-                    [PerkType.GRAVITY_CASCADE]: () => this.startGravityCascade(screen),
+                    [PerkType.GRAVITY_CASCADE]: () => this.markLineToRemove(row, rowIndex), // we'll handle the drop anim in TetrisBoard main loop
                     [PerkType.CLEAR_BOARD]: () => this.markAllLinesToRemove(screen),
                   };
                 pixelsWithPerks.forEach((pixel) => {
@@ -75,21 +74,15 @@ class ScreenUtils {
         return row.pixels.every(({type}) => type === PixelType.EMPTY);
     }
 
-    // // fix perks restart - maybe just clone them in the copy?
-    public startGravityCascade(screen: TScreen): void {
-        const maxDrop = this.calculateGravityCascadeMaxDrop(screen);
-        // const tick = (GAME_TICK - 50 ) / maxDrop;
-        const tick = (1000 - 50 ) / maxDrop;
-        const timer = setInterval(() => {
-            const frame = this.getGravityCascadeFrame(screen);
-            if(frame) {
-                // this.logScreen(frame);
-                screen = frame;
-                // setActualScreen(getActualScreen());
-            } else {
-                clearInterval(timer);
-            }
-        }, tick);
+    public getPerkPixels(rows: Array<Row>): Array<Pixel> {
+        return rows.reduce((pixelsAcc, currentRow) => {
+            const perkPixels = currentRow.pixels.filter(({perk}) => perk);
+            return [...pixelsAcc, ...perkPixels];
+        }, new Array<Pixel>());
+    }
+
+    public hasPerkType(rows: Array<Row>, perkType: PerkType): boolean {
+        return this.getPerkPixels(rows).find(({perk}) => perk?.perkType === perkType) !== null;
     }
 
     /** 
@@ -118,31 +111,12 @@ class ScreenUtils {
         }, 0);
     }
 
-    // // ignore a line we've already cleared and came with gravity cascade from!?
-    // public applyGravityCascade(screen: TScreen): boolean {
-    //     let somethingDropped = false;
-    //     console.log(`####`, this.calculateGravityCascadeMaxDrop(screen));
-    //     for (let row = screen.length - 1; row > 0; row--) {
-    //         const rowPixels = screen[row].pixels;
-    //         const abovePixels = screen[row - 1]?.pixels;
-    //         if(!abovePixels) { continue; };
-    //         for(let col = 0; col < rowPixels.length; col ++)  {
-    //             if(rowPixels[col].type === PixelType.EMPTY && abovePixels[col].type !== PixelType.EMPTY) {
-    //                 rowPixels[col] = abovePixels[col];
-    //                 abovePixels[col] = this.createPixel(PixelType.EMPTY);
-    //                 somethingDropped = true;
-    //             }
-    //         }
-    //       }
-    //       return somethingDropped ? this.applyGravityCascade(screen) : somethingDropped;
-    //   }
-
-      /**
-       * 
-       * @param initial screen/frame
-       * @returns screen a frame of cascade or null if no more frames (all pixels dropped to the lowest)
-       */
-      public getGravityCascadeFrame(screen: TScreen): TScreen | null {
+    /**
+     * 
+     * @param initial screen/frame
+     * @returns screen a frame of cascade or null if no more frames (all pixels dropped to the lowest)
+     */
+    public getGravityCascadeFrame(screen: TScreen): TScreen | null {
         let somethingDropped = false;
         for (let row = screen.length - 1; row > 0; row--) {
             const rowPixels = screen[row].pixels;
@@ -155,13 +129,13 @@ class ScreenUtils {
                     somethingDropped = true;
                 }
             }
-          }
-          return somethingDropped ? screen : null;
-      }
+        }
+        return somethingDropped ? screen : null;
+    }
 
-      // WARNING! it causes every perk to be restarted (new object, new reference:()
-      // using this and setting it's result as actual screen will cause every perk to restart!
-      public cloneScreen(screen: TScreen, copyPerks: boolean = false): TScreen {
+    // WARNING! it causes every perk to be restarted (new object, new reference:()
+    // using this and setting it's result as actual screen will cause every perk to restart!
+    public cloneScreen(screen: TScreen, copyPerks: boolean = false): TScreen {
         const copyScreen: TScreen = new Array();
         screen.forEach((row) => {
             const copyRow = { pixels: new Array<Pixel>()};
@@ -169,14 +143,14 @@ class ScreenUtils {
             copyScreen.push(copyRow);
         });
         return copyScreen;
-      }
+    }
 
-      public logScreen(screen:TScreen): void {
+    public logScreen(screen:TScreen): void {
         if(screen) {
             const screenString = screen.map((row) => `${row.pixels.map(({ type }) => type === PixelType.TAKEN ? 'X' : '.').join('')}\r\n`);
             console.log(screenString.join(''));
         }
-      }
+    }
 
 
 }
