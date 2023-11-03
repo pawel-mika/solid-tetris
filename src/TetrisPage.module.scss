@@ -7,32 +7,50 @@
 }
 
 .header {
+    @media (orientation: landscape) {
+        font-size: 2em;
+
+        select {
+            font-size: 3vh;
+        }
+    }
+
+    @media (orientation: portrait) {
+        font-size: 1vh;
+
+        select {
+            font-size: 1vh;
+        }
+    }
+
     background-color: #282c34;
     border-bottom: 1px solid lightblue;
     display: grid;
     grid-auto-flow: column;
     align-content: center;
     justify-content: flex-start;
-    font-size: 2em;
     color: white;
     padding: 1vw;
     height: 1vh;
     column-gap: 1vw;
     align-items: center;
-
-    select {
-        font-size: 3vh;
-    }
 }
 
 .footer {
+    @media (orientation: landscape), (max-aspect-ratio: 1/1) {
+        font-size: 1em;
+    }
+
+    @media (orientation: portrait) {
+        font-size: 1vh;
+    }
+
     border-top: 1px solid lightblue;
     background-color: #282c34;
     display: grid;
     grid-auto-flow: column;
     align-content: center;
     justify-content: flex-start;
-    font-size: 1em;
     color: white;
     padding: 1vw;
     height: 1vh;
@@ -43,6 +61,14 @@
 }
 
 .content {
+    @media (orientation: landscape)  {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    @media (orientation: portrait) {
+        grid-template-rows: 1fr 1fr 1fr;
+    }
+
     margin: 0;
     background-color: #282c54;
     width: 100vw;
@@ -51,7 +77,6 @@
     font-size: calc(2vmin);
     color: white;
     overflow: hidden;
-    grid-template-columns: 1fr 1fr 1fr;
     perspective: 100vh;
     // background: linear-gradient(45deg, #421c03, #0a434b, #250f75, #79071a);
     // background-size: 600% 600%;
@@ -78,24 +103,41 @@
 }
 
 .help {
-    font-size: 3vh;
+    @media (orientation: landscape) {
+        font-size: 3vh;
+    }
+
+    @media (orientation: portrait) {
+        display: none;
+    }
 }
 
 .info {
-    font-size: 3vh;
+    @media (orientation: landscape) {
+        font-size: 3vh;
+        grid-template-columns: 1fr;
+        grid-template-rows: min-content min-content min-content 0.5fr min-content 1fr;
+        button {
+            margin-top: 1em;
+            font-size: 3vh;
+        }
+    }
+
+    @media (orientation: portrait) {
+        font-size: 1.5vh;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: min-content min-content min-content 0.5fr min-content 1fr;
+        button {
+            margin-top: 0.5em;
+            font-size: 1.5vh;
+        }
+    }
+
     display: grid;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: min-content min-content min-content 0.5fr min-content 1fr;
     gap: 0px 0px;
     justify-content: center;
     justify-items: center;
     align-items: center;
-
-    button {
-        margin-top: 1em;
-        font-size: 3vh;
-    }
 }
 
 .smallText {

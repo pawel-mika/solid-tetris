@@ -1,4 +1,4 @@
-import { Component, createEffect, createRenderEffect, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
+import { Accessor, Component, createEffect, createRenderEffect, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import AnimableElement from './components/AnimableElement';
 import GameStateOverlay from './components/GameState';
 import LoadGameModal from './components/LoadGameModal';
@@ -12,6 +12,7 @@ import Settings from './utils/Settings';
 import TilesUtils from './utils/TilesUtils';
 import ArcadeLegend from './components/ArcadeLegend';
 import { EGameMode } from './model/GameState';
+import { createSwipe, Direction, SwipeEvent } from './hooks/onSwipe';
 
 declare const __APP_VERSION__: string;
 declare const __COMMIT_HASH__: string;
@@ -23,6 +24,9 @@ declare type ScoreDiff = {
 }
 
 const TetrisPage: Component = () => {
+  let ref: HTMLElement | ((el: HTMLDivElement) => void) | undefined;
+  let onSwipe: Accessor<SwipeEvent | null>;
+
   const getHiScore = () => localStorage.getItem('hiScore') || '0';
 
   const {
@@ -48,6 +52,10 @@ const TetrisPage: Component = () => {
   const [keyBinding, setKeyBinding] = createSignal<KeyBinding>(Settings.getKeyBinding(), { equals: false });
 
   onMount(() => {
+    if(ref) {
+      const {onSwipe: swipe} = createSwipe(ref as HTMLElement);
+      onSwipe = swipe;
+    }
     document.addEventListener('keydown', onKeyDown);
     window.addEventListener('blur', () => doPause());
     window.addEventListener('beforeunload', onBeforeUnload);  // maybe save on every step instead? wouldn't be too costly IMO
@@ -99,6 +107,20 @@ const TetrisPage: Component = () => {
   }
 
   createEffect(() => {
+    const evt = onSwipe();
+    if(evt) {
+      console.log(evt);
+      const keys: {[key in Direction]?: string} = {
+        [Direction.UP]: Settings.getKeyBinding().rotate,
+        [Direction.DOWN]: Settings.getKeyBinding().down,
+        [Direction.LEFT]: Settings.getKeyBinding().left,
+        [Direction.RIGHT]: Settings.getKeyBinding().right,
+      };
+      onKeyDown(new KeyboardEvent('keydown', {key: keys[evt.direction]}));
+    }
+  });
+
+  createEffect(() => {
     if (gameState()) {
       setKeyBinding(Settings.getKeyBinding());
     }
@@ -147,7 +169,6 @@ const TetrisPage: Component = () => {
             config => <option value={config.name}>{config.name}</option>
           }</For>
         </select>
-
         Board size:
         <select value={boardConfig().name} onInput={e => changeBoardSize(e)} disabled={!gameState().isGameOver}>
           <For each={Settings.getBoardConfigs()}>{
@@ -190,7 +211,7 @@ const TetrisPage: Component = () => {
             <AnimableElement onAnimEnd={() => removeScoreDiff(index())} animInClass={styles.score}>{item.score}<Show when={item.message}><br/>{item.message}</Show></AnimableElement>}
         </For>
 
-        <div class={styles.tetris} style={{
+        <div class={styles.tetris} ref={ref} style={{
           "grid-template-columns": `repeat(${screen()[0].pixels.length - 1}, 1fr) minmax(0, 1fr)`
         }}>
           {renderScreen()}

@@ -6,11 +6,18 @@
 }
 
 .modalBody {
+    @media (orientation: landscape), (max-aspect-ratio: 4/3) {
+        font-size: 25vh;
+    }
+
+    @media (orientation: portrait) {
+        font-size: 12vh;
+    }
+
     display: grid;
     position: absolute;
     width: 100%;
     pointer-events: none;
-    font-size: 25vh;
     align-self: center;
     align-content: center;
     text-shadow: 6px 6px 8px rgb(9 9 18);

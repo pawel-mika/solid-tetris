@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "predeploy": "npm run build",
-    "start": "vite",
+    "start": "vite --host",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"

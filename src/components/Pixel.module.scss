@@ -1,7 +1,14 @@
 .pixel {
+    @media (orientation: landscape), (max-aspect-ratio: 1/1) {
+        min-width: 3vh;
+        min-height: 3vh;
+    }
+
+    @media (orientation: portrait) {
+        min-width: 2vh;
+        min-height: 2vh;
+    }
     display: grid;
-    min-width: 3vh;
-    min-height: 3vh;
     font-size: 1vh;
     align-content: center;
     display: grid;
@@ -72,9 +79,16 @@
                 height: 100%;
                 vertical-align: middle;
             }
+            
+            @media (orientation: landscape), (max-aspect-ratio: 1/1) {
+                font-size: 1.75vh;
+            }
+        
+            @media (orientation: portrait) {
+                font-size: 1vh;
+            }
 
             mix-blend-mode: hard-light;
-            font-size: 1.75vh;
             text-shadow: 0.15vh 0.15vh 0.15vh black;
         }
     }

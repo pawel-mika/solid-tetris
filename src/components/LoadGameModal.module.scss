@@ -1,7 +1,14 @@
 .small {
+    @media (min-aspect-ratio: 5/3) {
+        font-size: 15vh;
+    }
+
+    @media (max-aspect-ratio: 5/3) {
+        font-size: 8vh;
+    }
+
     display: grid;
     width: 100%;
-    font-size: 15vh;
     height: 100%;
     background-color: #2d3142b5;
     border-top: 5px solid white;
