@@ -9,32 +9,24 @@ export declare type ModalProps = {
     hide: boolean;
 }
 
-/**
- * TODO Add animation/transition end callback to call `onHidden`
- * @param props 
- * @returns 
- */
 const Modal: ParentComponent<ParentProps & ModalProps> = (props) => {
-
-    // prevent first initial unwanted show
-    const [initialPrevented, setInitialPrevented] = createSignal<boolean>();
+    const [isInitialized, setIsInitialized] = createSignal(false);
     createEffect(() => {
-        if (initialPrevented()) {
-            return;
-        }
         if (props.show) {
-            setInitialPrevented(true)
+             setIsInitialized(true);
         }
     });
 
-    return (<div class={styles.modal}>
-        <div class={styles.modalBody} classList={{
-            [props.showClass ?? styles['animate-in']]: props.show && initialPrevented(),
-            [props.hideClass ?? styles['animate-out']]: props.hide && initialPrevented()
-        }}>
-            <span>{props.children ?? `default modal content...`}</span>
+    return (
+        <div class={styles.modal}>
+            <div class={styles.modalBody} classList={{
+                [props.showClass ?? styles['animate-in']]: props.show && isInitialized(),
+                [props.hideClass ?? styles['animate-out']]: props.hide && isInitialized()
+            }}>
+                <span>{props.children ?? `default modal content...`}</span>
+            </div>
         </div>
-    </div>);
+    );
 }
 
 export default Modal;

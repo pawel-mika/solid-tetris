@@ -28,12 +28,16 @@
         height: 100%;
         background-size: 100%;
         mix-blend-mode: hard-light;
-        animation: perk-in forwards 1s cubic-bezier(0, .75, .5, 1);
+        animation: perk-in forwards 1s cubic-bezier(.17, .84, .43, 1.4);
 
         &.perk-timeout {
             --angle: 0deg;
-            background: conic-gradient(from var(--angle), transparent 50%, #efefefef 100%);
+            background: conic-gradient(from var(--angle), transparent 50%, #efefefef 98%, transparent 100%);
             animation: rotate-conic-angle forwards 1s linear;
+        }
+
+        &.perk-out {
+            animation: perk-out 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
         }
 
         &.perk-paused {
@@ -135,12 +139,33 @@
 
 @keyframes perk-in {
     0% {
-        transform: scale(4) translateX(2vw);
-        filter: opacity(0) blur(2vh);
+        transform: scale(8) translateX(0vw);
+        filter: opacity(0) blur(1vh);
+    }
+
+    85% {
+        transform: scale(1.1);
+        filter: opacity(1) blur(0);
     }
 
     100% {
         transform: scale(1) rotatex(0);
         filter: opacity(1) blur(0);
+    }
+}
+
+@keyframes perk-out {
+    0% {
+        transform: scale(1) rotatex(0);
+        filter: opacity(1) blur(0);
+    }
+
+    25% {
+        transform: scale(1.1) rotate(45deg);
+    }
+
+    100% {
+        transform: scale(0.1) rotate(-45deg);
+        filter: opacity(0) blur(0.5vh);
     }
 }

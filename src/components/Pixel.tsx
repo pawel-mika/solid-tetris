@@ -9,6 +9,7 @@ import styles from './Pixel.module.scss';
 // the perk animation restarts... :( no idea yet how to solve...
 const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (props) => {
     const [perk, setPerk] = createSignal<Perk | null>(null);
+    const [isPerkLeaving, setIsPerkLeaving] = createSignal(false);
 
     const setRandomRemovingAnimation = (pixel: Pixel): Pixel => {
         const anims = [styles['pixels-out-1'], styles['pixels-out-2']];
@@ -25,8 +26,11 @@ const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (pro
         pixel.perk.style = { ...pixel.perk.style, 'animation-duration': `${pixel.perk?.timeActive}s` };
         createTimer(() => {
             console.log('## perk timed out, removing', pixel.perk);
-            pixel.perk = undefined;
-            setPerk(null);
+            setIsPerkLeaving(true);
+            setTimeout(() => {
+                pixel.perk = undefined;
+                setPerk(null);
+            }, 500);
         },
             (pixel.perk?.timeActive || 0) * 1000,
             pixel.perk?.isPaused);
@@ -52,12 +56,14 @@ const PixelComponent: Component<{ pixel: Pixel, difficulty: Difficulty }> = (pro
         <Show when={perk()}>
             <div classList={{
                 [styles.perk]: true,
-                [styles[props.pixel.perk?.perkType || '']]: true
+                [styles[props.pixel.perk?.perkType || '']]: true,
+                [styles['perk-out']]: isPerkLeaving(),
             }}></div>
             <div classList={{
                 [styles.perk]: true,
                 [styles['perk-timeout']]: true,
-                [styles['perk-paused']]: props.pixel.perk?.isPaused()
+                [styles['perk-paused']]: props.pixel.perk?.isPaused(),
+                [styles['perk-out']]: isPerkLeaving(),
             }}
                 style={props.pixel.perk?.style}></div>
             <Show when={perk()?.perkType === PerkType.POINT_MULTIPLIER}>
