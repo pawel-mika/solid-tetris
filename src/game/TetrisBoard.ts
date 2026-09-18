@@ -1,4 +1,4 @@
-import { createEffect, createRenderEffect, createSignal } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import { SaveGame } from '../hooks/saveGame';
 import { TetrisBoard } from '../model/Board';
 import { EGameMode, GameMode, GameState } from '../model/GameState';
@@ -58,6 +58,8 @@ const createTetrisBoard = (): TetrisBoard => {
     const createNewScreen = (height = BOARD_HEIGHT) => Array<Row>(height).fill(createRow());
 
     let screen: TScreen;
+    let isCascading = false;
+    let cascadeEpoch = 0;
 
     const [nextTile, setNextTile] = createSignal<Tile>(createTile());
     const [actualScreen, setActualScreen] = createSignal<TScreen>(createNewScreen());
@@ -81,6 +83,31 @@ const createTetrisBoard = (): TetrisBoard => {
         if (gameState.isGameOver || (gameState.isPaused && e.key.toLowerCase() !== keyBinding.pause.toLowerCase())) {
             return;
         }
+        if (isCascading && e.key.toLowerCase() !== keyBinding.pause.toLowerCase()) {
+            return;
+        }
+        // DEV cheats must work even when full lines are present (e.g. Alt+1 cascade)
+        if (import.meta.env.DEV && e.altKey) {
+            switch (e.key.toLowerCase()) {
+                case '0': {
+                    const perk = PerkFactory.getRandomPerk();
+                    ScreenUtils.getTakenPixels(screen)[0].perk = perk;
+                    screen = screen.map((row) => {
+                        row.pixels = row.pixels.map((pixel) => pixel.perk === perk ? { ...pixel } : pixel);
+                        return row;
+                    });
+                    break;
+                }
+                case '1':
+                    beginGravityCascade();
+                    break;
+                default:
+                    break;
+            }
+            calculateDeltaTilePosition();
+            setActualScreen(getActualScreen());
+            return;
+        }
         if (TilesUtils.hasFullLines(screen)) {
             return;
         }
@@ -99,29 +126,10 @@ const createTetrisBoard = (): TetrisBoard => {
                 tile = rotateIfPossible(tile);
                 break;
             case keyBinding.pause.toLowerCase():
-                gameState.isPaused = !gameState.isPaused;
-                setGameState(gameState);
-                pausePerks();
+                pause(!gameState.isPaused);
+                break;
             default:
                 break;
-        }
-        // some dev codes, add 'dev mode' condition to if
-        if(import.meta.env.DEV && e.altKey) {
-            switch(e.key.toLowerCase()) {
-                case '0':
-                    const perk = PerkFactory.getRandomPerk();
-                    ScreenUtils.getTakenPixels(screen)[0].perk = perk;
-                    screen = screen.map((row) => {
-                        row.pixels = row.pixels.map((pixel) => pixel.perk === perk ? {...pixel} : pixel);
-                        return row;
-                    });
-                    break;
-                case '1':
-                    console.log(ScreenUtils.calculateGravityCascadeMaxDrop(screen));
-                    startGravityCascade();
-                default:
-                    break;
-            }
         }
         calculateDeltaTilePosition();
         setActualScreen(getActualScreen());
@@ -133,6 +141,9 @@ const createTetrisBoard = (): TetrisBoard => {
      */
     const mainLoop = () => {
         if (gameState.isPaused || gameState.isGameOver) {
+            return;
+        }
+        if (isCascading) {
             return;
         }
 
@@ -166,10 +177,8 @@ const createTetrisBoard = (): TetrisBoard => {
         setActualScreen(getActualScreen());
 
         const fullLines = TilesUtils.getFullLines(screen);
-        const hasCascade = fullLines.length && ScreenUtils.hasPerkType(fullLines, PerkType.GRAVITY_CASCADE);
-        if(hasCascade) { // something wrong here
-            screen = clearMarkedLines(screen);
-            startGravityCascade();
+        if (fullLines.length && ScreenUtils.hasPerkType(fullLines, PerkType.GRAVITY_CASCADE)) {
+            beginGravityCascade();
         }
     }
 
@@ -205,25 +214,25 @@ const createTetrisBoard = (): TetrisBoard => {
         setGameState(gameState);
     }
 
-    const clearMarkedLines = (screen: TScreen): TScreen => {
-        const clearedScreen = screen.filter((row, index) => {
-            const removedPixels = row.pixels.filter(({type}) => type === PixelType.REMOVING).length
+    const clearMarkedLines = (screen: TScreen, options?: { spawnPerk?: boolean }): TScreen => {
+        const spawnPerk = options?.spawnPerk !== false;
+        const clearedScreen = screen.filter((row) => {
+            const removedPixels = row.pixels.filter(({ type }) => type === PixelType.REMOVING).length;
             return removedPixels === 0;
         });
         const diff = screen.length - clearedScreen.length;
-        // check perks in removed lines and act accordingly
 
         if (diff > 0) {
-            // WIP TMP in this place - remove later drawing a perk from here!!
-            addScore(getPointsMultiplier(TilesUtils.getFullLines(screen)) * getPointsForRows(diff));
-            switch(gameMode().mode) {
-                case EGameMode.ARCADE:
-                    return [...Array<Row>(diff).fill(createRow()), ...drawPerkOnScreen(clearedScreen)];
-                case EGameMode.CLASSIC:
-                case EGameMode.ENDLESS:
-                default:
-                    return [...Array<Row>(diff).fill(createRow()), ...clearedScreen];
+            if (spawnPerk) {
+                addScore(getPointsMultiplier(TilesUtils.getFullLines(screen)) * getPointsForRows(diff));
+            } else {
+                addScore(getPointsForRows(diff));
             }
+            const padded = [...Array<Row>(diff).fill(createRow()), ...clearedScreen];
+            if (spawnPerk && gameMode().mode === EGameMode.ARCADE) {
+                return drawPerkOnScreen(padded);
+            }
+            return padded;
         }
         return screen;
     }
@@ -293,22 +302,105 @@ const createTetrisBoard = (): TetrisBoard => {
         }));
     }
 
-    // fix perks restart - maybe just clone them in the copy?
-    const startGravityCascade = () => {
-        const frames = ScreenUtils.calculateGravityCascadeMaxDrop(screen);
-        const tick = (GAME_TICK - 50 ) / frames;
-        const timer = setInterval(() => {
-            const frame = ScreenUtils.getGravityCascadeFrame(screen);
-            if(frame) {
-                screen = frame;
-                setActualScreen(getActualScreen());
-            } else {
-                clearInterval(timer);
+    const refreshScreen = () => setActualScreen(getActualScreen());
+
+    const waitMs = (ms: number) => {
+        const epochAtStart = cascadeEpoch;
+        return new Promise<void>((resolve) => {
+            let elapsed = 0;
+            let last = Date.now();
+            const id = window.setInterval(() => {
+                if (epochAtStart !== cascadeEpoch) {
+                    window.clearInterval(id);
+                    resolve();
+                    return;
+                }
+                const now = Date.now();
+                if (gameState.isPaused) {
+                    last = now; // hold timer while paused
+                    return;
+                }
+                elapsed += now - last;
+                last = now;
+                if (elapsed >= ms) {
+                    window.clearInterval(id);
+                    resolve();
+                }
+            }, 16);
+        });
+    };
+
+    const animateGravityFrames = async (runEpoch: number) => {
+        const maxDrop = ScreenUtils.calculateGravityCascadeMaxDrop(screen);
+        const tick = maxDrop > 0
+            ? Math.max(40, (GAME_TICK - 50) / maxDrop)
+            : Math.max(40, GAME_TICK - 50);
+        for (;;) {
+            if (runEpoch !== cascadeEpoch) {
+                return;
             }
-        }, tick);
-    }
+            const frame = ScreenUtils.getGravityCascadeFrame(screen);
+            if (!frame) {
+                break;
+            }
+            screen = frame;
+            refreshScreen();
+            await waitMs(tick);
+            if (runEpoch !== cascadeEpoch) {
+                return;
+            }
+        }
+    };
+
+    const beginGravityCascade = async () => {
+        if (isCascading) {
+            return;
+        }
+        const runEpoch = cascadeEpoch;
+        isCascading = true;
+
+        try {
+            // Show REMOVING from markLinesToRemove, then clear trigger lines (no new perk)
+            await waitMs(GAME_TICK);
+            if (runEpoch !== cascadeEpoch) {
+                return;
+            }
+            screen = clearMarkedLines(screen, { spawnPerk: false });
+            refreshScreen();
+
+            // Chain: drop → plain full clear → repeat
+            for (;;) {
+                await animateGravityFrames(runEpoch);
+                if (runEpoch !== cascadeEpoch) {
+                    return;
+                }
+
+                const full = TilesUtils.getFullLines(screen);
+                if (!full.length) {
+                    break;
+                }
+
+                ScreenUtils.markFullLinesToRemove(screen);
+                refreshScreen();
+                await waitMs(GAME_TICK);
+                if (runEpoch !== cascadeEpoch) {
+                    return;
+                }
+                screen = clearMarkedLines(screen, { spawnPerk: false });
+                refreshScreen();
+            }
+
+            refreshScreen();
+        } finally {
+            if (runEpoch === cascadeEpoch) {
+                isCascading = false;
+            }
+        }
+    };
 
     const reset = () => {
+        isCascading = false;
+        cascadeEpoch++;
         pause();
         changeDifficulty(Settings.getDifficulties()[0]);
         clearInterval(gameState.gameInterval);

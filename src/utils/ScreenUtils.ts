@@ -1,9 +1,7 @@
-import { createEffect, createRenderEffect } from 'solid-js';
 import { PerkType } from '../model/Perk';
 import { Pixel, PixelType } from "../model/Pixel";
 import { Row } from '../model/Row';
 import { TScreen } from '../model/Screen';
-import BlockFactory from './BlockFactory';
 
 class ScreenUtils {
     private static instance: ScreenUtils;
@@ -40,7 +38,7 @@ class ScreenUtils {
                     [PerkType.REMOVE_ROW_BELOW]: () => rowIndex < screen.length - 1 && this.markLineToRemove(screen[rowIndex + 1], rowIndex + 1),
                     [PerkType.REMOVE_EVEN_ROWS]: () => this.markEvenLinesToRemove(screen),
                     [PerkType.POINT_MULTIPLIER]: () => this.markLineToRemove(row, rowIndex),
-                    [PerkType.GRAVITY_CASCADE]: () => this.markLineToRemove(row, rowIndex), // we'll handle the drop anim in TetrisBoard main loop
+                    [PerkType.GRAVITY_CASCADE]: () => this.markLineToRemove(row, rowIndex),
                     [PerkType.CLEAR_BOARD]: () => this.markAllLinesToRemove(screen),
                   };
                 pixelsWithPerks.forEach((pixel) => {
@@ -82,33 +80,40 @@ class ScreenUtils {
     }
 
     public hasPerkType(rows: Array<Row>, perkType: PerkType): boolean {
-        return this.getPerkPixels(rows).find(({perk}) => perk?.perkType === perkType) !== null;
+        return this.getPerkPixels(rows).some(({ perk }) => perk?.perkType === perkType);
+    }
+
+    public markFullLinesToRemove(screen: TScreen): TScreen {
+        screen.forEach((row, rowIndex) => {
+            const taken = row.pixels.filter(({ type }) => type !== PixelType.EMPTY).length;
+            if (taken === row.pixels.length) {
+                this.markLineToRemove(row, rowIndex);
+            }
+        });
+        return screen;
     }
 
     /** 
      * calculate how many px down we need to drop 
      */
     public calculateGravityCascadeMaxDrop(screen: TScreen): number {
-        const block = screen.reduceRight((acc, cRow) => {
-            !this.isRowEmpty(cRow) && acc.push(cRow.pixels);
-            return acc;
-        }, new Array<Array<Pixel>>());
-        const ccwBlock = BlockFactory.rotateBlockCCW<Pixel>(block);
-        return ccwBlock.reduce((acc, cRow) => {
-            let max = 0;
-            if(!this.isRowEmpty({pixels: cRow}))  {
-                cRow.forEach(({type}, idx) => {
-                    const isEmpty = type === 0;
-                    const someTakenTillEnd = !this.isRowEmpty({pixels: cRow.slice(idx)});
-                    if(isEmpty && someTakenTillEnd) {
-                        max++;
-                    }
-                });
+        if (!screen.length) return 0;
+        const width = screen[0].pixels.length;
+        let max = 0;
+        for (let col = 0; col < width; col++) {
+            let emptyBelow = 0;
+            let colMax = 0;
+            for (let row = screen.length - 1; row >= 0; row--) {
+                const type = screen[row].pixels[col].type;
+                if (type === PixelType.EMPTY) {
+                    emptyBelow++;
+                } else {
+                    colMax = Math.max(colMax, emptyBelow);
+                }
             }
-                
-            console.log(cRow.map(px => px.type === 1 ? 'X' : '.').join(''), max, acc);
-            return max > acc ? max : acc;
-        }, 0);
+            max = Math.max(max, colMax);
+        }
+        return max;
     }
 
     /**
@@ -131,18 +136,6 @@ class ScreenUtils {
             }
         }
         return somethingDropped ? screen : null;
-    }
-
-    // WARNING! it causes every perk to be restarted (new object, new reference:()
-    // using this and setting it's result as actual screen will cause every perk to restart!
-    public cloneScreen(screen: TScreen, copyPerks: boolean = false): TScreen {
-        const copyScreen: TScreen = new Array();
-        screen.forEach((row) => {
-            const copyRow = { pixels: new Array<Pixel>()};
-            row.pixels.forEach((pixel) => copyRow.pixels.push(copyPerks && pixel.perk ? pixel : {...pixel}));
-            copyScreen.push(copyRow);
-        });
-        return copyScreen;
     }
 
     public logScreen(screen:TScreen): void {

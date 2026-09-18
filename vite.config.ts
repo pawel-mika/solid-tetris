@@ -22,4 +22,8 @@ export default defineConfig({
     __COMMIT_HASH__: JSON.stringify(commitHash),
     __BUILD_DATE__: JSON.stringify(new Date().toUTCString()),
   },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+  },
 });
